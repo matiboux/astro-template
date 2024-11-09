@@ -1,6 +1,11 @@
 ---
 import type { ImageMetadata } from 'astro'
 
+import { I18nKeys } from '~/i18n/type'
+
+import { i18nFactory } from '~/i18n'
+const _ = i18nFactory(Astro.currentLocale as any)
+
 import '~/styles/style.scss'
 
 export interface Props
@@ -11,7 +16,7 @@ export interface Props
 	htmlAttributes?: { [key: string]: string }
 	// Meta tags
 	title: string
-	description?: string | undefined
+	description?: string | I18nKeys | undefined
 	author?: string | undefined
 	keywords?: string | string[] | undefined
 	generator?: boolean
@@ -36,7 +41,6 @@ const {
 	htmlAttributes = {},
 	// Meta tags
 	title,
-	description = undefined,
 	author = undefined,
 	keywords = undefined,
 	generator = true,
@@ -53,6 +57,9 @@ const {
 	bodyClass = undefined,
 	bodyAttributes = {},
 } = Astro.props
+
+const description = typeof Astro.props.description !== 'string'
+	? _(Astro.props.description) : Astro.props.description
 
 const formatsToType = {
 	'ico': 'image/x-icon',
