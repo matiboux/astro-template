@@ -7,10 +7,18 @@ const _ = i18nFactory(Astro.currentLocale as any)
 
 <Layout>
 
-	<span class="icon icon-[mdi--hand-wave] icon-align icon-fw"></span>
-	{_({
-		en: 'Welcome!',
-		fr: 'Bienvenue !',
-	})}
+	<p>
+		<span class="icon icon-[mdi--hand-wave] icon-align icon-fw"></span>
+		{_({
+			en: 'Welcome!',
+			fr: 'Bienvenue !',
+		})}
+	</p>
 
 </Layout>
+
+<style lang="scss">
+p {
+	@apply m-4;
+}
+</style>
