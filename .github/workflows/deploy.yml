@@ -12,7 +12,8 @@ on:
     paths:
       - '.github/workflows/deploy.yml'
       - 'app/**'
-      - 'docker-compose*.yml'
+      - 'docker-compose.yml'
+      - 'docker-compose.cicd.yml'
 
   # Run on manual triggers
   workflow_dispatch:
@@ -36,26 +37,26 @@ jobs:
 
     steps:
 
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Build for production
-      env:
-        GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
-        GITHUB_SHA: ${{ github.sha }}
-        BUILD_CHECK: "false" # Skip type checks
-      run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml build
+      - name: Build for production
+        env:
+          GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          BUILD_CHECK: "false" # Skip type checks
+        run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml build
 
-    - name: Copy application files
-      run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml run --rm app
+      - name: Copy application files
+        run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml up
 
-    - name: Chown dist folder to $USER
-      run: sudo chown -R $USER:$USER ./app/dist
+      - name: Chown dist folder to $USER
+        run: sudo chown -R $USER:$USER ./app/dist
 
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: ./app/dist
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./app/dist
 
   # Deploy job
   deploy:
@@ -63,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
-    # Dependencies
+    # Job dependencies
     needs:
       - build
 
@@ -79,6 +80,6 @@ jobs:
 
     steps:
 
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
