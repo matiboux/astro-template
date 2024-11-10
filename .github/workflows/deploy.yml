@@ -48,7 +48,7 @@ jobs:
         run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml build
 
       - name: Copy application files
-        run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml run --rm app
+        run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml up
 
       - name: Chown dist folder to $USER
         run: sudo chown -R $USER:$USER ./app/dist
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
-    # Dependencies
+    # Job dependencies
     needs:
       - build
 
