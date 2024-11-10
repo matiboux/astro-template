@@ -16,12 +16,13 @@ on:
     paths:
       - '.github/workflows/check.yml'
       - 'app/**'
-      - 'docker-compose*.yml'
+      - 'docker-compose.yml'
+      - 'docker-compose.cicd.yml'
 
   # Run on manual triggers
   workflow_dispatch:
 
-# Set GITHUB_TOKEN permissions
+# Set GITHUB_TOKEN permissions for the workflow
 permissions:
   contents: read
 
@@ -40,21 +41,21 @@ jobs:
 
     steps:
 
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Build for production
-      env:
-        GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
-        GITHUB_SHA: ${{ github.sha }}
-        BUILD_CHECK: "true" # Run type checks
-      run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml build
+      - name: Build for production
+        env:
+          GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          BUILD_CHECK: "true" # Run type checks
+        run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml build
 
-    - name: Copy application files
-      run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml run --rm app
+      - name: Copy application files
+        run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml run --rm app
 
-    - name: Check application files
-      run: |
-        [ -d ./app/dist ] && [ $(ls -1 ./app/dist | wc -l) -gt 0 ] \
-          && echo "Application files found" \
-          || ( echo "No application files found" && exit 1 )
+      - name: Check application files
+        run: |
+          [ -d ./app/dist ] && [ $(ls -1 ./app/dist | wc -l) -gt 0 ] \
+            && echo "Application files found" \
+            || ( echo "No application files found" && exit 1 )
