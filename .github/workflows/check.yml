@@ -1,6 +1,7 @@
 name: Check CI
 
 on:
+
   # Run on pull requests to primary branches
   pull_request:
     branches:
@@ -52,7 +53,7 @@ jobs:
         run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml build
 
       - name: Copy application files
-        run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml run --rm app
+        run: docker compose -f docker-compose.yml -f docker-compose.cicd.yml up
 
       - name: Check application files
         run: |
