@@ -4,6 +4,8 @@ import getLocaleByUrl from './getLocaleByUrl'
 import getLocaleUrlList from './getLocaleUrlList'
 import getUrlWithoutLocale from './getUrlWithoutLocale'
 
+import type { Locales, I18nKeys } from './type'
+
 export {
 	i18n,
 	defaultLocale,
@@ -11,4 +13,9 @@ export {
 	getLocaleByUrl,
 	getLocaleUrlList,
 	getUrlWithoutLocale,
+}
+
+export type {
+	Locales,
+	I18nKeys
 }
