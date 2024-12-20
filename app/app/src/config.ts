@@ -2,7 +2,6 @@ import type { AstroUserConfig } from 'astro/config'
 
 export const i18n =
 {
-	defaultLocale: 'en',
 	locales: [
 		{
 			codes: ['en', 'en-US'],
@@ -13,15 +12,22 @@ export const i18n =
 			path: 'fr',
 		},
 		{
-			codes: ['es', 'es-ES'],
-			path: 'es',
-		},
-		{
 			codes: ['de', 'de-DE'],
 			path: 'de',
 		},
+		{
+			codes: ['es', 'es-ES'],
+			path: 'es',
+		},
 	],
+	defaultLocale: 'en',
+	fallback: {
+		fr: 'en',
+		de: 'en',
+		es: 'en',
+	},
 	routing: {
 		prefixDefaultLocale: false,
+		fallbackType: 'rewrite',
 	},
 } as const satisfies AstroUserConfig['i18n']
