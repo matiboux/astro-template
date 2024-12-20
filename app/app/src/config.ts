@@ -1,4 +1,4 @@
-import type { AstroUserConfig } from 'astro/config'
+import type { AstroConfig } from 'astro'
 
 export const i18n =
 {
@@ -30,4 +30,4 @@ export const i18n =
 		prefixDefaultLocale: false,
 		fallbackType: 'rewrite',
 	},
-} as const satisfies AstroUserConfig['i18n']
+} as const satisfies AstroConfig['i18n']
