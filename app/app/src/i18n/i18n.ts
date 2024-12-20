@@ -11,10 +11,32 @@ function i18n(
 {
 	const value = keys[locale!] ?? keys[defaultLocale]
 
-	return value?.replace(/{(\d+)}/g, (match, number) =>
+	if (!value)
+	{
+		return value
+	}
+
+	if (args.length === 1 && typeof args[0] === 'object')
+	{
+		// Arguments are passed as an object
+		args = args[0] as any
+	}
+
+	if (Array.isArray(args))
+	{
+		// Arguments are passed as an array
+		return value?.replace(/{(\d+)}/g, (match, number) =>
+			{
+				const index = Number.parseInt(number)
+				return String(args[index] ?? match)
+			}
+		)
+	}
+
+	// Arguments are passed as a dictionary
+	return value?.replace(/{([^}]+)}/g, (match, key) =>
 		{
-			const index = Number.parseInt(number)
-			return String(args[index] ?? match)
+			return String(args[key] ?? match)
 		}
 	)
 }
