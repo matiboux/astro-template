@@ -13,14 +13,61 @@ const _ = i18nFactory(Astro.currentLocale as any)
 			en: 'Welcome!',
 			fr: 'Bienvenue !',
 			de: 'Willkommen!',
-			es: '¡Bienvenido!'
+			es: '¡Bienvenido!',
 		})}
 	</p>
+
+	<ul class="lang-list">
+		<li>
+			<a href="/" class:list={[ Astro.currentLocale === 'en' && 'active' ]}>
+				<span class="icon icon-[twemoji--flag-united-kingdom] icon-align"></span>
+			</a>
+		</li>
+		<li>
+			<a href="/fr" class:list={[ Astro.currentLocale === 'fr' && 'active' ]}>
+				<span class="icon icon-[twemoji--flag-france] icon-align"></span>
+			</a>
+		</li>
+		<li>
+			<a href="/de" class:list={[ Astro.currentLocale === 'de' && 'active' ]}>
+				<span class="icon icon-[twemoji--flag-germany] icon-align"></span>
+			</a>
+		</li>
+		<li>
+			<a href="/es" class:list={[ Astro.currentLocale === 'es' && 'active' ]}>
+				<span class="icon icon-[twemoji--flag-spain] icon-align"></span>
+			</a>
+		</li>
+	</ul>
 
 </Layout>
 
 <style lang="scss">
+:global(body) {
+	@apply p-4;
+}
+
 p {
-	@apply m-4;
+	@apply mb-4;
+}
+
+.lang-list {
+	@apply flex items-center mb-4 gap-2;
+
+	.icon {
+		@apply text-2xl;
+	}
+
+	a {
+		@apply opacity-50;
+
+		&:hover {
+			@apply opacity-75;
+		}
+
+		&:active, &.active {
+			@apply opacity-100;
+		}
+	}
 }
 </style>
