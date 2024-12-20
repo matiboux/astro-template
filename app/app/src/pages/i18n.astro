@@ -1,0 +1,184 @@
+---
+import {
+	getRelativeLocaleUrl,
+	getAbsoluteLocaleUrl,
+	getRelativeLocaleUrlList,
+	getAbsoluteLocaleUrlList,
+	getPathByLocale,
+	getLocaleByPath,
+} from 'astro:i18n'
+
+import Layout from '~/layouts/Layout.astro'
+
+const i18n_tests = [
+	{
+		title: 'getRelativeLocaleUrl()',
+		tests: [
+			{
+				value: getRelativeLocaleUrl('fr'),
+				expected: '/fr',
+			},
+			{
+				value: getRelativeLocaleUrl('fr', ''),
+				expected: '/fr/',
+			},
+			{
+				value: getRelativeLocaleUrl('fr', 'getting-started'),
+				expected: '/fr/getting-started',
+			},
+			{
+				value: getRelativeLocaleUrl('de', 'getting-started', {
+					prependWith: 'blog',
+				}),
+				expected: '/blog/de/getting-started',
+			},
+			{
+				value: getRelativeLocaleUrl('de', 'getting-started', {
+					prependWith: 'blog',
+					normalizeLocale: false,
+				}),
+				expected: '/blog/de/getting-started',
+			},
+		],
+	},
+	{
+		title: 'getAbsoluteLocaleUrl()',
+		tests: [
+			{
+				value: getAbsoluteLocaleUrl('fr'),
+				expected: 'https://example.com/fr',
+			},
+			{
+				value: getAbsoluteLocaleUrl('fr', ''),
+				expected: 'https://example.com/fr/',
+			},
+			{
+				value: getAbsoluteLocaleUrl('fr', 'getting-started'),
+				expected: 'https://example.com/fr/getting-started',
+			},
+			{
+				value: getAbsoluteLocaleUrl('de', 'getting-started', {
+					prependWith: 'blog',
+				}),
+				expected: 'https://example.com/blog/de/getting-started',
+			},
+			{
+				value: getAbsoluteLocaleUrl('de', 'getting-started', {
+					prependWith: 'blog',
+					normalizeLocale: false,
+				}),
+				expected: 'https://example.com/blog/de/getting-started',
+			},
+		],
+	},
+	{
+		title: 'getRelativeLocaleUrlList()',
+		tests: [
+			{
+				value: getRelativeLocaleUrlList('about'),
+				expected: [
+					'/about',
+					'/fr/about',
+					'/de/about',
+					'/es/about',
+				],
+			},
+			{
+				value: getRelativeLocaleUrlList('about', {
+					prependWith: 'blog',
+				}),
+				expected: [
+					'/blog/about',
+					'/blog/fr/about',
+					'/blog/de/about',
+					'/blog/es/about',
+				],
+			},
+		],
+	},
+	{
+		title: 'getAbsoluteLocaleUrlList()',
+		tests: [
+			{
+				value: getAbsoluteLocaleUrlList('about'),
+				expected: [
+					'https://example.com/about',
+					'https://example.com/fr/about',
+					'https://example.com/de/about',
+					'https://example.com/es/about',
+				],
+			},
+			{
+				value: getAbsoluteLocaleUrlList('about', {
+					prependWith: 'blog',
+				}),
+				expected: [
+					'https://example.com/blog/about',
+					'https://example.com/blog/fr/about',
+					'https://example.com/blog/de/about',
+					'https://example.com/blog/es/about',
+				],
+			},
+		],
+	},
+	{
+		title: 'getPathByLocale()',
+		tests: [
+			{
+				value: getPathByLocale('fr'), // Input: Locale code
+				expected: 'fr', // Output: Locale path
+			},
+			{
+				value: getPathByLocale('fr_FR'), // Input: Locale code
+				expected: 'fr', // Output: Locale path
+			},
+		],
+	},
+	{
+		title: 'getLocaleByPath()',
+		tests: [
+			{
+				value: getLocaleByPath('fr'), // Input: Locale path
+				expected: 'fr', // Output: First locale code
+			},
+		],
+	},
+]
+
+function formatValue(value) {
+	return Array.isArray(value) ? JSON.stringify(value) : value
+}
+---
+
+<Layout>
+
+	{i18n_tests.map(({ title, tests }) => (
+		<p>
+			{title}
+		</p>
+
+		<ul>
+			{tests.map(({ value, expected }) => (
+				<li>
+					{formatValue(value) == formatValue(expected) ? '✅' : '❌'}
+					'{formatValue(expected)}' == '{formatValue(value)}'
+				</li>
+			))}
+		</ul>
+	))}
+
+</Layout>
+
+<style lang="scss">
+:global(body) {
+	@apply p-4;
+}
+
+p {
+	@apply mb-4;
+}
+
+ul {
+	@apply list-outside list-disc mb-4 pl-4;
+}
+</style>
