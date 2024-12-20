@@ -9,7 +9,7 @@ function i18n(
 {
 	const value = keys[locale] ?? keys[i18nConfig.defaultLocale]
 
-	return value.replace(/{(\d+)}/g, (match, number) =>
+	return value?.replace(/{(\d+)}/g, (match, number) =>
 		{
 			const index = Number.parseInt(number)
 			return args[index] ?? match
