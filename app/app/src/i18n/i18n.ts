@@ -3,6 +3,8 @@ import type { Locales, I18nKeys } from './type'
 
 const defaultLocale = i18nConfig.defaultLocale
 
+const locales = i18nConfig.locales.map(locale => locale.path)
+
 function i18n(
 	locale: Locales | undefined,
 	keys: I18nKeys,
@@ -45,4 +47,5 @@ export default i18n
 
 export {
 	defaultLocale,
+	locales,
 }
