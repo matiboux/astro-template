@@ -12,6 +12,14 @@ export const i18n =
 			codes: ['fr', 'fr-FR'],
 			path: 'fr',
 		},
+		{
+			codes: ['es', 'es-ES'],
+			path: 'es',
+		},
+		{
+			codes: ['de', 'de-DE'],
+			path: 'de',
+		},
 	],
 	routing: {
 		prefixDefaultLocale: false,
