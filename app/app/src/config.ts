@@ -4,19 +4,19 @@ export const i18n =
 {
 	locales: [
 		{
-			codes: ['en', 'en-US'],
+			codes: ['en', 'en_US'],
 			path: 'en',
 		},
 		{
-			codes: ['fr', 'fr-FR'],
+			codes: ['fr', 'fr_FR'],
 			path: 'fr',
 		},
 		{
-			codes: ['de', 'de-DE'],
+			codes: ['de', 'de_DE'],
 			path: 'de',
 		},
 		{
-			codes: ['es', 'es-ES'],
+			codes: ['es', 'es_ES'],
 			path: 'es',
 		},
 	],
