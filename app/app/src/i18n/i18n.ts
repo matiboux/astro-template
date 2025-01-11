@@ -7,11 +7,13 @@ const locales = new Set(i18nConfig.locales.map(locale => typeof locale === 'stri
 
 function i18n(
 	locale: Locales | undefined,
-	keys: I18nKeys,
+	keys: I18nKeys | string,
 	...args: any[]
 )
 {
-	const value = keys[locale!] ?? keys[defaultLocale]
+	const value = typeof keys === 'string'
+		? ((i18nConfig.localeKeys[locale!] ?? i18nConfig.localeKeys[defaultLocale])?.[keys] ?? keys)
+		: (keys[locale!] ?? keys[defaultLocale])
 
 	if (!value)
 	{
