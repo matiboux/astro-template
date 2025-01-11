@@ -28,6 +28,7 @@ export const i18n =
 	},
 	routing: {
 		prefixDefaultLocale: false,
+		redirectToDefaultLocale: true,
 		fallbackType: 'rewrite',
 	},
 } as const satisfies AstroConfig['i18n']
