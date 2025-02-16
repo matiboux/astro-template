@@ -25,7 +25,8 @@ WORKDIR /app
 FROM app_base AS app_build_base
 
 # Install pnpm
-RUN corepack enable && corepack install -g pnpm
+RUN --mount=type=cache,target=~/.npm \
+	npm install -g pnpm
 ENV PNPM_HOME='/pnpm'
 ENV PATH="$PNPM_HOME:$PATH"
 
