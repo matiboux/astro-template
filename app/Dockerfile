@@ -36,6 +36,12 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 FROM app_build_base AS app_build_dev
 
+# Copy app build configuration
+COPY --link \
+	./app/package.json \
+	./app/pnpm-lock.yaml \
+	./
+
 # Install app development dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 	pnpm install --frozen-lockfile
@@ -69,29 +75,19 @@ CMD [ "--help" ]
 
 
 # --
-# Runtime base image
+# Dev image
 
-FROM app_base AS app_runtime_base
+FROM app_base AS app_dev
 
 # Set runtime environment
 ENV APP_ENV=dev
 ENV NODE_ENV=development
 
-# Install dev dependencies, required for build
-RUN --mount=type=bind,source=./app/package.json,target=./package.json \
-	--mount=type=bind,source=./app/package-lock.json,target=./package-lock.json \
-	--mount=type=bind,source=./app/tsconfig.json,target=./tsconfig.json \
-	--mount=type=cache,target=~/.npm \
-	npm clean-install --include=dev
+# Copy app development dependencies
+COPY --link --from=app_build_dev /app/node_modules ./node_modules
 
 # Copy application source code
 COPY --link ./app .
-
-
-# --
-# Dev image
-
-FROM app_runtime_base AS app_dev
 
 # Set exposed port
 ARG PORT=8080
@@ -105,11 +101,17 @@ CMD [ "sh", "-c", "npm run dev -- --host --port \"${PORT}\"" ]
 # --
 # Prod build image
 
-FROM app_runtime_base AS app_prod_build
+FROM app_base AS app_prod_build
 
 # Set runtime environment
 ENV APP_ENV=prod
 ENV NODE_ENV=production
+
+# Copy app production dependencies
+COPY --link --from=app_build_prod /app/node_modules ./node_modules
+
+# Copy application source code
+COPY --link ./app .
 
 # Use application environment variables
 ARG GITHUB_REPOSITORY_URL=""
@@ -137,7 +139,7 @@ ENV APP_ENV=prod
 # Set app directory
 WORKDIR /usr/share/nginx/html
 
-# Copy built static website files
+# Copy app production build
 COPY --from=app_prod_build --link /app/dist .
 
 # Set exposed port
