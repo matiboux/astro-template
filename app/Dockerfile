@@ -20,16 +20,16 @@ WORKDIR /app
 
 
 # --
-# Npm image
+# CLI image
 
-FROM app_base AS app_npm
+FROM app_base AS app_cli
 
 # Mount source code as volume
 VOLUME /app
 
-# Run npm command
-COPY --link --chmod=755 ./docker/npm-entrypoint.sh /usr/local/bin/app-npm-entrypoint
-ENTRYPOINT [ "app-npm-entrypoint" ]
+# Run CLI command
+COPY --link --chmod=755 ./docker/cli-entrypoint.sh /usr/local/bin/app-cli-entrypoint
+ENTRYPOINT [ "app-cli-entrypoint" ]
 CMD [ "--help" ]
 
 
@@ -98,7 +98,6 @@ FROM nginx_upstream AS app_prod
 
 # Set runtime environment
 ENV APP_ENV=prod
-ENV NODE_ENV=production
 
 # Set app directory
 WORKDIR /usr/share/nginx/html
