@@ -56,6 +56,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 
 FROM app_build_base AS app_cli
 
+# Configure pnpm
+RUN pnpm config -g set store-dir /pnpm/store
+
 # Mount source code as volume
 VOLUME /app
 
