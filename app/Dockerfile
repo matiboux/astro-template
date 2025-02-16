@@ -20,9 +20,40 @@ WORKDIR /app
 
 
 # --
+# Build base image
+
+FROM app_base AS app_build_base
+
+# Install pnpm
+RUN corepack enable && corepack install -g pnpm
+ENV PNPM_HOME='/pnpm'
+ENV PATH="$PNPM_HOME:$PATH"
+
+
+# --
+# Build dev image
+
+FROM app_build_base AS app_build_dev
+
+# Install app development dependencies
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+	pnpm install --frozen-lockfile
+
+
+# --
+# Build prod image
+
+FROM app_build_base AS app_build_prod
+
+# Install app production dependencies
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+	pnpm install --prod --frozen-lockfile
+
+
+# --
 # CLI image
 
-FROM app_base AS app_cli
+FROM app_build_base AS app_cli
 
 # Mount source code as volume
 VOLUME /app

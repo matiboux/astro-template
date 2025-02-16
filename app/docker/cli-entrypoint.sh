@@ -9,14 +9,15 @@ if (
 		# Unless the first argument is one of these commands,
 		[ "$1" != 'npm' ] &&
 		[ "$1" != 'npx' ] &&
+		[ "$1" != 'pnpm' ] &&
 		[ "$1" != 'node' ] &&
 		# And, unless the first argument is one of these shells,
 		[ "$1" != 'sh' ] &&
 		[ "$1" != 'bash' ]
 	)
-	# Assume that the user wants to run npm
+	# Assume that the user wants to run pnpm
 ); then
-	set -- npm "$@"
+	set -- pnpm "$@"
 fi
 
 exec docker-entrypoint.sh "$@"
