@@ -18,10 +18,6 @@ services:
           path: ./app/app/package.json
         - action: rebuild
           path: ./app/app/package-lock.json
-        # Application configuration
-        - action: sync+restart
-          path: ./app/app/astro.config.mjs
-          target: /app/astro.config.mjs
         # Application source code
         - action: sync
           path: ./app/app
