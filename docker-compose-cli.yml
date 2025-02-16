@@ -16,4 +16,9 @@ services:
     environment: !reset []
     volumes:
       - ./app/app:/app
+      - pnpm:/pnpm
     ports: !reset []
+
+volumes:
+
+  pnpm:
