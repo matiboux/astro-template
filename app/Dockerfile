@@ -4,6 +4,12 @@
 
 
 # --
+# Global build arguments
+
+ARG UID=1001
+
+
+# --
 # Upstream images
 
 FROM node:22-slim AS node_upstream
@@ -62,10 +68,15 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 
 FROM app_build_base AS app_cli
 
+ARG UID
+
 # Configure pnpm
 RUN pnpm config -g set store-dir /pnpm/store
 
-# Mount source code as volume
+# Run as non-root user
+USER ${UID}:0
+
+# Mount source code
 VOLUME /app
 
 # Run CLI command
@@ -79,15 +90,23 @@ CMD [ "--help" ]
 
 FROM app_base AS app_dev
 
+ARG UID
+
 # Set runtime environment
 ENV APP_ENV=dev
 ENV NODE_ENV=development
 
 # Copy app development dependencies
-COPY --link --from=app_build_dev /app/node_modules ./node_modules
+COPY --link --from=app_build_dev --chown="${UID}:0" /app/node_modules ./node_modules
 
-# Copy application source code
-COPY --link ./app .
+# Copy source code
+COPY --link --chown="${UID}:0" ./app .
+
+# Create user 'user' in group 'root'
+RUN useradd -lm -u "${UID}" -g 0 user
+
+# Run as non-root user
+USER ${UID}:0
 
 # Set exposed port
 ARG PORT=8080
@@ -103,15 +122,17 @@ CMD [ "sh", "-c", "npm run dev -- --host --port \"${PORT}\"" ]
 
 FROM app_base AS app_prod_build
 
+ARG UID
+
 # Set runtime environment
 ENV APP_ENV=prod
 ENV NODE_ENV=production
 
 # Copy app production dependencies
-COPY --link --from=app_build_prod /app/node_modules ./node_modules
+COPY --link --from=app_build_prod --chown="${UID}:0" /app/node_modules ./node_modules
 
-# Copy application source code
-COPY --link ./app .
+# Copy source code
+COPY --link --chown="${UID}:0" ./app .
 
 # Use application environment variables
 ARG GITHUB_REPOSITORY_URL=""
