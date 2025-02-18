@@ -70,6 +70,9 @@ FROM app_build_base AS app_cli
 
 ARG UID
 
+# Use temporary directory as home
+ENV HOME=/tmp
+
 # Configure pnpm
 RUN pnpm config -g set store-dir /pnpm/store
 
