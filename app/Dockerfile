@@ -58,6 +58,12 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 
 FROM app_build_base AS app_build_prod
 
+# Copy app build configuration
+COPY --link \
+	./app/package.json \
+	./app/pnpm-lock.yaml \
+	./
+
 # Install app production dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 	pnpm install --prod --frozen-lockfile
