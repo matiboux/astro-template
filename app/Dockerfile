@@ -112,7 +112,12 @@ COPY --link --from=app_build_dev --chown="${UID}:0" /app/node_modules ./node_mod
 COPY --link --chown="${UID}:0" ./app .
 
 # Create user 'user' in group 'root'
-RUN useradd -lm -u "${UID}" -g 0 user
+RUN USERNAME="$(getent passwd "${UID}" | cut -d: -f1)"; \
+	if [ -z "${USERNAME}" ]; then \
+		useradd -lm -u "${UID}" -g "${UID}" -G 0 user; \
+	else \
+		usermod -a -G 0 "${USERNAME}"; \
+	fi
 
 # Run as non-root user
 USER ${UID}:0
