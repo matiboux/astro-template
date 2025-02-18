@@ -110,6 +110,7 @@ COPY --link --from=app_build_dev --chown="${UID}:0" /app/node_modules ./node_mod
 
 # Copy source code
 COPY --link --chown="${UID}:0" ./app .
+RUN mkdir -p ./.astro && chown -R "${UID}:0" ./.astro
 
 # Create user 'user' in group 'root'
 RUN USERNAME="$(getent passwd "${UID}" | cut -d: -f1)"; \
