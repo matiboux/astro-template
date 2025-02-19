@@ -21,9 +21,4 @@ services:
       - /tmp:mode=775,uid=${UID:-1000},gid=0
     volumes:
       - ./app/app:/app
-      - pnpm:/pnpm
     ports: !reset []
-
-volumes:
-
-  pnpm:

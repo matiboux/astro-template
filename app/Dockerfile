@@ -33,8 +33,6 @@ FROM app_base AS app_build_base
 # Install pnpm
 RUN --mount=type=cache,target=~/.npm \
 	npm install -g pnpm
-ENV PNPM_HOME='/pnpm'
-ENV PATH="$PNPM_HOME:$PATH"
 
 
 # --
@@ -78,9 +76,6 @@ ARG UID
 
 # Use temporary directory as home
 ENV HOME=/tmp
-
-# Configure pnpm
-RUN pnpm config -g set store-dir /pnpm/store
 
 # Run as non-root user
 USER ${UID}:0
