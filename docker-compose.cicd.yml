@@ -8,8 +8,10 @@ services:
     build:
       target: app_prod_build
       args:
+        UID: ${UID:-1000}
         BUILD_CHECK: ${BUILD_CHECK:-true}
     # Deploy override
+    user: ${UID:-1000}
     command: [ "sh", "-c", "rm -rf /tmp/dist/* && cp -r /app/dist/* /tmp/dist" ]
     volumes:
       - ./app/dist:/tmp/dist
