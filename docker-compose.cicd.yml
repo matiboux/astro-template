@@ -2,6 +2,17 @@
 
 services:
 
+  app-volumes:
+    # Build
+    image: matiboux/chown-volumes:latest
+    # Deploy
+    environment:
+      UID: ${UID:-1000}
+      VOLUMES: |
+        /dist
+    volumes:
+      - ./app/dist:/dist
+
   app:
     # Build override
     image: ${IMAGES_PREFIX:-app}-cicd:${IMAGES_TAG:-latest}
@@ -11,7 +22,10 @@ services:
         UID: ${UID:-1000}
         BUILD_CHECK: ${BUILD_CHECK:-true}
     # Deploy override
+    depends_on:
+      app-volumes:
+        condition: service_completed_successfully
     user: ${UID:-1000}
-    command: [ "sh", "-c", "rm -rf /tmp/dist/* && cp -r /app/dist/* /tmp/dist" ]
+    command: [ "sh", "-c", "rm -rf /dist/* && cp -r /app/dist/* /dist" ]
     volumes:
-      - ./app/dist:/tmp/dist
+      - ./app/dist:/dist
