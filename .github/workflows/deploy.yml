@@ -63,7 +63,7 @@ jobs:
           BUILD_CHECK: "false" # Skip type checks
         run: |
           # docker compose build
-          export UID="$(id -u)"
+          export DOCKER_UID="$(id -u)"
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.cicd.yml \
             --env-file .env \
@@ -72,7 +72,7 @@ jobs:
       - name: Copy application files
         run: |
           # docker compose up
-          export UID="$(id -u)"
+          export DOCKER_UID="$(id -u)"
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.cicd.yml \
             --env-file .env \
