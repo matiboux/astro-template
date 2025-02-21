@@ -138,8 +138,8 @@ ARG UID
 ENV APP_ENV=prod
 ENV NODE_ENV=production
 
-# Copy app production dependencies
-COPY --link --from=app_build_prod --chown="${UID}:0" /app/node_modules ./node_modules
+# Copy app development dependencies
+COPY --link --from=app_build_dev --chown="${UID}:0" /app/node_modules ./node_modules
 
 # Copy source code
 COPY --link --chown="${UID}:0" ./app .
