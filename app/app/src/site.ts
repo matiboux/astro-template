@@ -3,7 +3,7 @@ import type { Props as BaseProps } from '~/layouts/Base.astro'
 export interface Site
 {
 	lang?: BaseProps['lang']
-	title?: BaseProps['title'] | undefined
+	title?: BaseProps['title']
 	description?: BaseProps['description']
 	author?: BaseProps['author']
 	keywords?: BaseProps['keywords']
