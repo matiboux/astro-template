@@ -30,4 +30,5 @@ export const site: Site = {
 	themeColor: '#ffffff',
 	viewportScale: 1,
 	socialTitle: true,
+	socialDescription: true,
 }
