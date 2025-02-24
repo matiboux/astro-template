@@ -15,7 +15,7 @@ export interface Props
 	htmlClass?: string | undefined
 	htmlAttributes?: { [key: string]: string }
 	// Meta tags
-	title?: string | undefined
+	title?: string | I18nKeys | undefined
 	description?: string | I18nKeys | undefined
 	author?: string | undefined
 	keywords?: string | string[] | undefined
@@ -23,10 +23,10 @@ export interface Props
 	themeColor?: string | undefined
 	viewportScale?: number | undefined
 	favicon?: ImageMetadata | string | undefined
-	socialTitle?: string | true | undefined
-	socialDescription?: string | true | undefined
-	socialImage?: URL | undefined
-	socialUrl?: URL | undefined
+	socialTitle?: string | I18nKeys | true | undefined
+	socialDescription?: string | I18nKeys | true | undefined
+	socialImage?: URL | string | undefined
+	socialUrl?: URL | string | undefined
 	socialType?: string | undefined
 	socialTwitterCard?: string | undefined
 	// Body attributes
@@ -34,9 +34,25 @@ export interface Props
 	bodyAttributes?: { [key: string]: string }
 }
 
+const title =
+	typeof Astro.props.title !== 'string' && Astro.props.title !== undefined
+	? _(Astro.props.title)
+	: Astro.props.title
+
 const description =
 	typeof Astro.props.description !== 'string' && Astro.props.description !== undefined
-	? _(Astro.props.description) : Astro.props.description
+	? _(Astro.props.description)
+	: Astro.props.description
+
+const socialTitle =
+	typeof Astro.props.socialTitle !== 'string' && Astro.props.socialTitle !== undefined
+	? (Astro.props.socialTitle === true ? title : _(Astro.props.socialTitle))
+	: Astro.props.socialTitle
+
+const socialDescription =
+	typeof Astro.props.socialDescription !== 'string' && Astro.props.socialDescription !== undefined
+	? (Astro.props.socialDescription === true ? title : _(Astro.props.socialDescription))
+	: Astro.props.socialDescription
 
 const formatsToType = {
 	'ico': 'image/x-icon',
@@ -67,8 +83,10 @@ const formatsToType = {
 			/>
 		}
 
-		<title>{Astro.props.title}</title>
-		<meta name="title" content={Astro.props.title} />
+		{title && (
+			<title>{title}</title>
+			<meta name="title" content={title} />
+		)}
 		{description && <meta name="description" content={description} />}
 		{Astro.props.author && <meta name="author" content={Astro.props.author} />}
 		{Astro.props.keywords && <meta name="keywords" content={Array.isArray(Astro.props.keywords) ? Astro.props.keywords.join(', ') : Astro.props.keywords} />}
@@ -76,8 +94,8 @@ const formatsToType = {
 		{Astro.props.themeColor && <meta name="theme-color" content={Astro.props.themeColor} />}
 
 		<!-- Social media -->
-		{Astro.props.socialTitle && <meta property="og:title" content={typeof Astro.props.socialTitle === 'string' ? Astro.props.socialTitle : Astro.props.title} />}
-		{Astro.props.socialDescription && <meta property="og:description" content={typeof Astro.props.socialDescription === 'string' ? Astro.props.socialDescription : description} />}
+		{socialTitle && <meta property="og:title" content={socialTitle} />}
+		{socialDescription && <meta property="og:description" content={socialDescription} />}
 		{Astro.props.socialImage && <meta property="og:image" content={Astro.props.socialImage} />}
 		{Astro.props.socialUrl && <meta property="og:url" content={Astro.props.socialUrl} />}
 		{Astro.props.socialType && <meta property="og:type" content={Astro.props.socialType} />}
