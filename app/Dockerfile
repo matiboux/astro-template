@@ -58,6 +58,23 @@ FROM app_build_base AS app_cli
 
 ARG UID
 
+# Install sudo
+# (hadolint: Ignore non-pinned apt package version)
+# hadolint ignore=DL3008
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+	--mount=type=cache,sharing=locked,target=/var/lib/apt \
+	apt-get update && \
+	apt-get install -y --no-install-recommends sudo && \
+	echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Create user 'user' in group 'root' & 'sudo'
+RUN USERNAME="$(getent passwd "${UID}" | cut -d: -f1)"; \
+	if [ -z "${USERNAME}" ]; then \
+		useradd -lm -u "${UID}" -U -G 0,sudo user; \
+	else \
+		usermod -a -G 0,sudo "${USERNAME}"; \
+	fi
+
 # Run as non-root user
 USER ${UID}:0
 
