@@ -24,6 +24,9 @@ FROM node_upstream AS app_base
 # Set app directory
 WORKDIR /app
 
+# Use temporary directory as home
+ENV HOME=/tmp
+
 
 # --
 # Build base image
@@ -41,10 +44,7 @@ RUN --mount=type=cache,target=~/.npm \
 FROM app_build_base AS app_build_dev
 
 # Copy app build configuration
-COPY --link \
-	./app/package.json \
-	./app/pnpm-lock.yaml \
-	./
+COPY --link ./app/package.json ./app/pnpm-lock.yaml ./
 
 # Install app development dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
@@ -58,8 +58,22 @@ FROM app_build_base AS app_cli
 
 ARG UID
 
-# Use temporary directory as home
-ENV HOME=/tmp
+# Install sudo
+# (hadolint: Ignore non-pinned apt package version)
+# hadolint ignore=DL3008
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+	--mount=type=cache,sharing=locked,target=/var/lib/apt \
+	apt-get update && \
+	apt-get install -y --no-install-recommends sudo && \
+	echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Create user 'user' in group 'root' & 'sudo'
+RUN USERNAME="$(getent passwd "${UID}" | cut -d: -f1)"; \
+	if [ -z "${USERNAME}" ]; then \
+		useradd -lm -u "${UID}" -U -G 0,sudo user; \
+	else \
+		usermod -a -G 0,sudo "${USERNAME}"; \
+	fi
 
 # Run as non-root user
 USER ${UID}:0
