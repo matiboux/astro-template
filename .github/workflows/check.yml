@@ -74,11 +74,13 @@ jobs:
           BUILD_CHECK: "true" # Run type checks
         run: |
           # docker compose build
+          echo "::group::Build details"
           export DOCKER_UID="$(id -u)"
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.cicd.yml \
             --env-file .env \
             build
+          echo "::endgroup::"
 
       - name: Copy application files
         run: |
