@@ -121,6 +121,9 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
 	--mount=type=cache,sharing=locked,target=/var/lib/apt \
 	pnpm exec playwright install --with-deps
 
+# Build application
+RUN pnpm run build-only
+
 # Run as non-root user
 USER ${UID}:0
 
