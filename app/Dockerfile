@@ -114,6 +114,9 @@ FROM app_test_base AS app_test_e2e
 # Build arguments
 ARG UID
 
+# Configure Playwright
+ENV PLAYWRIGHT_BROWSERS_PATH=/etc/playwright/browsers
+
 # Install Playwright dependencies
 # (hadolint: Ignore non-pinned apt package version)
 # hadolint ignore=DL3008
