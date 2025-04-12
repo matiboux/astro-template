@@ -119,8 +119,7 @@ ARG UID
 # hadolint ignore=DL3008
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
 	--mount=type=cache,sharing=locked,target=/var/lib/apt \
-	pnpm exec playwright install-deps && \
-	pnpm exec playwright install
+	pnpm exec playwright install --with-deps
 
 # Run as non-root user
 USER ${UID}:0
