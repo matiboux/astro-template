@@ -107,6 +107,20 @@ COPY --link --chown="${UID}:0" ./app .
 
 
 # --
+# Test unit image
+
+FROM app_test_base AS app_test_unit
+
+# Build arguments
+ARG UID
+
+# Run as non-root user
+USER ${UID}:0
+
+CMD [ "sh", "-c", "pnpm run test:vitest" ]
+
+
+# --
 # Test E2E image
 
 FROM app_test_base AS app_test_e2e
@@ -129,9 +143,6 @@ RUN pnpm run build-only
 
 # Run as non-root user
 USER ${UID}:0
-
-# Mount data as volume
-VOLUME /data
 
 CMD [ "sh", "-c", "pnpm run test:playwright --output /tmp/playwright/test-results" ]
 
