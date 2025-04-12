@@ -23,7 +23,7 @@ on:
       # CI files
       - '.github/workflows/test-e2e.yml'
       - 'docker-compose.yml'
-      - 'docker-compose.test:e2e.yml'
+      - 'docker-compose.test-e2e.yml'
       - '.env'
       # Application files
       - 'app/**'
@@ -61,7 +61,7 @@ jobs:
         run: |
           # docker compose pull --ignore-buildable
           docker compose \
-            -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
+            -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
             --env-file .env \
             pull --ignore-buildable
 
@@ -74,7 +74,7 @@ jobs:
           echo "::group::Build details"
           export DOCKER_UID="$(id -u)"
           docker compose \
-            -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
+            -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
             --env-file .env \
             build
           echo "::endgroup::"
@@ -84,7 +84,7 @@ jobs:
           # docker compose up
           export DOCKER_UID="$(id -u)"
           docker compose \
-            -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
+            -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
             --env-file .env \
             up -d
 
@@ -93,7 +93,7 @@ jobs:
           # Set DOCKER_SERVICES environment variable
           DOCKER_SERVICES="$(
             docker compose \
-              -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
+              -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
               --env-file .env \
               config --services
           )"
@@ -108,7 +108,7 @@ jobs:
         run: |
           # docker compose wait
           docker compose \
-            -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
+            -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
             --env-file .env \
             wait $DOCKER_SERVICES \
             || exit 0
@@ -121,7 +121,7 @@ jobs:
           for SERVICE in $DOCKER_SERVICES; do
             echo "::group::Docker logs for service '${SERVICE}'"
             docker compose \
-              -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
+              -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
               --env-file .env \
               logs --no-log-prefix $SERVICE
             echo "::endgroup::"
