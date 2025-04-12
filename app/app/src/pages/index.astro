@@ -1,5 +1,6 @@
 ---
 import Layout from '~/layouts/Layout.astro'
+import LocalesPicker from '~/components/LocalesPicker/LocalesPicker.astro'
 
 import { i18nFactory } from '~/i18n'
 const _ = i18nFactory(Astro.currentLocale as any)
@@ -17,28 +18,7 @@ const _ = i18nFactory(Astro.currentLocale as any)
 		})}
 	</p>
 
-	<ul class="lang-list">
-		<li>
-			<a href="/" class:list={[ Astro.currentLocale === 'en' && 'active' ]}>
-				<span class="icon icon-[twemoji--flag-united-kingdom] icon-align"></span>
-			</a>
-		</li>
-		<li>
-			<a href="/fr" class:list={[ Astro.currentLocale === 'fr' && 'active' ]}>
-				<span class="icon icon-[twemoji--flag-france] icon-align"></span>
-			</a>
-		</li>
-		<li>
-			<a href="/de" class:list={[ Astro.currentLocale === 'de' && 'active' ]}>
-				<span class="icon icon-[twemoji--flag-germany] icon-align"></span>
-			</a>
-		</li>
-		<li>
-			<a href="/es" class:list={[ Astro.currentLocale === 'es' && 'active' ]}>
-				<span class="icon icon-[twemoji--flag-spain] icon-align"></span>
-			</a>
-		</li>
-	</ul>
+	<LocalesPicker lang={Astro.currentLocale} />
 
 	<p set:html={_({
 		en: 'Selected language: <code>{lang}</code>.',
