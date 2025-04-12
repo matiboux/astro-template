@@ -71,11 +71,13 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
         run: |
           # docker compose build
+          echo "::group::Build details"
           export DOCKER_UID="$(id -u)"
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
             --env-file .env \
             build
+          echo "::endgroup::"
 
       - name: Start E2E tests
         run: |
