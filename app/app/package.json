@@ -13,6 +13,7 @@
     "build-only": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "test:vitest": "vitest",
     "test:playwright": "playwright test"
   },
   "repository": {
