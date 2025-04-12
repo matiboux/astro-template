@@ -18,7 +18,7 @@ services:
     user: ${DOCKER_UID:-${UID:-1000}}
     environment: !reset []
     tmpfs:
-      - /tmp:mode=1777,uid=${DOCKER_UID:-${UID:-1000}},gid=0
+      - /tmp:mode=1777,exec,uid=${DOCKER_UID:-${UID:-1000}},gid=0
     volumes:
       - ./app/app:/app
     ports: !reset []
