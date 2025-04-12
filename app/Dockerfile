@@ -133,7 +133,7 @@ USER ${UID}:0
 # Mount data as volume
 VOLUME /data
 
-CMD [ "sh", "-c", "pnpm run test:e2e --output /tmp/playwright/test-results" ]
+CMD [ "sh", "-c", "pnpm run test:playwright --output /tmp/playwright/test-results" ]
 
 
 # --
