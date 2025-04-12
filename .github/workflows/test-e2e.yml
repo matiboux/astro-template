@@ -63,9 +63,9 @@ jobs:
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
             --env-file .env \
-            pull app --ignore-buildable
+            pull --ignore-buildable
 
-      - name: Build for production
+      - name: Build for E2E tests
         env:
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
@@ -76,20 +76,13 @@ jobs:
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
             --env-file .env \
-            build app
+            build
 
-      - name: Copy application files
+      - name: Run E2E tests
         run: |
           # docker compose up
           export DOCKER_UID="$(id -u)"
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
             --env-file .env \
-            up app --no-log-prefix
-
-      - name: Check application files
-        run: |
-          # Check application files
-          [ -d ./app/dist ] && [ $(ls -1 ./app/dist | wc -l) -gt 0 ] \
-            && echo "Application files found" \
-            || ( echo "No application files found" && exit 1 )
+            up --attach app --no-log-prefix
