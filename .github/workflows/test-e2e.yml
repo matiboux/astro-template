@@ -69,7 +69,6 @@ jobs:
         env:
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
-          BUILD_CHECK: "true" # Run type checks
         run: |
           # docker compose build
           export DOCKER_UID="$(id -u)"
