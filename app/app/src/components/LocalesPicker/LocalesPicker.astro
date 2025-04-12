@@ -4,7 +4,9 @@ export interface Props
 	lang?: string | undefined
 }
 
-const { lang } = Astro.props
+const {
+	lang = Astro.currentLocale,
+} = Astro.props
 ---
 
 <ul class="lang-list">
