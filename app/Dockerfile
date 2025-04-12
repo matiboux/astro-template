@@ -88,6 +88,50 @@ CMD [ "--help" ]
 
 
 # --
+# Test base image
+
+FROM app_base AS app_test_base
+
+# Build arguments
+ARG UID
+
+# Set runtime environment
+ENV APP_ENV=test
+ENV NODE_ENV=development
+
+# Copy app development dependencies
+COPY --link --from=app_build_dev --chown="${UID}:0" /app/node_modules ./node_modules
+
+# Copy source code
+COPY --link --chown="${UID}:0" ./app .
+
+
+# --
+# Test E2E image
+
+FROM app_test_base AS app_test_e2e
+
+# Build arguments
+ARG UID
+
+# Install Playwright dependencies
+# (hadolint: Ignore non-pinned apt package version)
+# hadolint ignore=DL3008
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+	--mount=type=cache,sharing=locked,target=/var/lib/apt \
+	pnpm exec playwright install-deps && \
+	pnpm exec playwright install
+
+# Run as non-root user
+USER ${UID}:0
+
+# Mount data as volume
+VOLUME /data
+
+CMD [ "sh", "-c", "npm run test:e2e" ]
+
+
+# --
 # Dev image
 
 FROM app_base AS app_dev
