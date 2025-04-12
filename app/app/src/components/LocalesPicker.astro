@@ -1,0 +1,55 @@
+---
+export interface Props
+{
+	lang?: string | undefined
+}
+
+const { lang } = Astro.props
+---
+
+<ul class="lang-list">
+	<li>
+		<a href="/" class:list={[ lang === 'en' && 'active' ]}>
+			<span class="icon icon-[twemoji--flag-united-kingdom] icon-align"></span>
+		</a>
+	</li>
+	<li>
+		<a href="/fr" class:list={[ lang === 'fr' && 'active' ]}>
+			<span class="icon icon-[twemoji--flag-france] icon-align"></span>
+		</a>
+	</li>
+	<li>
+		<a href="/de" class:list={[ lang === 'de' && 'active' ]}>
+			<span class="icon icon-[twemoji--flag-germany] icon-align"></span>
+		</a>
+	</li>
+	<li>
+		<a href="/es" class:list={[ lang === 'es' && 'active' ]}>
+			<span class="icon icon-[twemoji--flag-spain] icon-align"></span>
+		</a>
+	</li>
+</ul>
+
+<style>
+@reference "tailwindcss/theme";
+
+.lang-list {
+	@apply flex items-center mb-4 gap-2;
+
+	.icon {
+		@apply text-2xl;
+	}
+
+	a {
+		@apply opacity-50;
+
+		&:hover {
+			@apply opacity-75;
+		}
+
+		&:active, &.active {
+			@apply opacity-100;
+		}
+	}
+}
+</style>
