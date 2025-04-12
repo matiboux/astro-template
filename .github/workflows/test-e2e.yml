@@ -77,11 +77,50 @@ jobs:
             --env-file .env \
             build
 
-      - name: Run E2E tests
+      - name: Start E2E tests
         run: |
           # docker compose up
           export DOCKER_UID="$(id -u)"
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
             --env-file .env \
-            up --attach app --no-log-prefix
+            up -d
+
+      - name: List E2E tests services
+        run: |
+          # Set DOCKER_SERVICES environment variable
+          DOCKER_SERVICES="$(
+            docker compose \
+              -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
+              --env-file .env \
+              config --services
+          )"
+          echo "Set DOCKER_SERVICES to '${DOCKER_SERVICES}'"
+          echo "DOCKER_SERVICES<<GITHUB_ENV_EOF" >> $GITHUB_ENV
+          echo "${DOCKER_SERVICES}" >> $GITHUB_ENV
+          echo 'GITHUB_ENV_EOF' >> $GITHUB_ENV
+
+      - name: Wait for E2E tests to finish
+        env:
+          DOCKER_SERVICES: ${{ env.DOCKER_SERVICES }}
+        run: |
+          # docker compose wait
+          docker compose \
+            -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
+            --env-file .env \
+            wait $DOCKER_SERVICES \
+            || exit 0
+
+      - name: Print E2E tests logs
+        env:
+          DOCKER_SERVICES: ${{ env.DOCKER_SERVICES }}
+        run: |
+          # docker compose logs
+          for SERVICE in $DOCKER_SERVICES; do
+            echo "::group::Docker logs for service '${SERVICE}'"
+            docker compose \
+              -f ./docker-compose.yml -f ./docker-compose.test:e2e.yml \
+              --env-file .env \
+              logs --no-log-prefix $SERVICE
+            echo "::endgroup::"
+          done
