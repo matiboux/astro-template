@@ -90,7 +90,7 @@ CMD [ "--help" ]
 # --
 # Test base image
 
-FROM app_base AS app_test_base
+FROM app_build_base AS app_test_base
 
 # Build arguments
 ARG UID
@@ -128,7 +128,7 @@ USER ${UID}:0
 # Mount data as volume
 VOLUME /data
 
-CMD [ "sh", "-c", "npm run test:e2e" ]
+CMD [ "sh", "-c", "pnpm run test:e2e --output /tmp/playwright/test-results" ]
 
 
 # --

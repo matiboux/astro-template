@@ -15,5 +15,7 @@ services:
         UID: ${DOCKER_UID:-${UID:-1000}}
     # Deploy override
     user: ${DOCKER_UID:-${UID:-1000}}
+    environment:
+      CI: ${CI:-}
     tmpfs:
       - /tmp:mode=1777,uid=${DOCKER_UID:-${UID:-1000}},gid=0
