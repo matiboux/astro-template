@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test'
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './test',
+  testDir: './test/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI, // Forbid test.only on CI
   retries: process.env.CI ? 2 : 0, // Retry failed tests on CI
