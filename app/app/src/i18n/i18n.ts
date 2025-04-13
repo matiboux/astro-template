@@ -1,11 +1,11 @@
 import { i18n as i18nConfig } from '~/config'
 import type { Locales, I18nKeys } from './type'
 
-const defaultLocale = i18nConfig.defaultLocale
+export const defaultLocale = i18nConfig.defaultLocale
 
-const locales = new Set(i18nConfig.locales.map(locale => typeof locale === 'string' ? locale : locale.path))
+export const locales = new Set(i18nConfig.locales.map(locale => typeof locale === 'string' ? locale : locale.path))
 
-function i18n(
+export function i18n(
 	locale: Locales | undefined,
 	keys: I18nKeys | string,
 	...args: any[]
@@ -43,11 +43,4 @@ function i18n(
 			return String(args[key] ?? match)
 		}
 	)
-}
-
-export default i18n
-
-export {
-	defaultLocale,
-	locales,
 }
