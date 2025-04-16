@@ -5,6 +5,7 @@ export interface Site
 	lang?: BaseProps['lang']
 	title?: BaseProps['title']
 	description?: BaseProps['description']
+	version?: BaseProps['version']
 	author?: BaseProps['author']
 	keywords?: BaseProps['keywords']
 	generator?: BaseProps['generator']
