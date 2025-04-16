@@ -6,6 +6,7 @@ x-common:
     environment: &app_environment
       GITHUB_REPOSITORY_URL: ${GITHUB_REPOSITORY_URL:-}
       GITHUB_SHA: ${GITHUB_SHA:-}
+      VERSION_TAG: ${VERSION_TAG:-}
 
 services:
 

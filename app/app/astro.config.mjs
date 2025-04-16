@@ -16,6 +16,7 @@ export default defineConfig({
 		schema: {
 			GITHUB_REPOSITORY_URL: envField.string({ context: 'client', access: 'public', optional: true }),
 			GITHUB_SHA: envField.string({ context: 'client', access: 'public', optional: true }),
+			VERSION_TAG: envField.string({ context: 'client', access: 'public', optional: true }),
 		},
 		validateSecrets: true,
 	},
