@@ -1,9 +1,12 @@
 ---
 import Layout from '~/layouts/Layout.astro'
 import LocalesPicker from '~/components/LocalesPicker/LocalesPicker.astro'
+import { GITHUB_REPOSITORY_URL } from 'astro:env/client'
 
 import { i18nFactory } from '~/i18n'
 const _ = i18nFactory(Astro.currentLocale as any)
+
+import { site } from '~/site'
 ---
 
 <Layout>
@@ -26,6 +29,27 @@ const _ = i18nFactory(Astro.currentLocale as any)
 		de: 'Ausgewählte Sprache: <code>{lang}</code>.',
 		es: 'Idioma seleccionado: <code>{lang}</code>.',
 	}, { lang: Astro.currentLocale })} />
+
+	<p set:html={_({
+		en: 'Version: <code>{version}</code>.',
+		fr: 'Version : <code>{version}</code>.',
+		de: 'Version: <code>{version}</code>.',
+		es: 'Versión: <code>{version}</code>.',
+	}, { version: site.version || 'dev' })} />
+
+	{GITHUB_REPOSITORY_URL &&
+		<p>
+			{_({
+				en: 'GitHub repository:',
+				fr: 'Dépôt GitHub :',
+				de: 'GitHub-Repository:',
+				es: 'Repositorio de GitHub:',
+			})}
+			<a href={GITHUB_REPOSITORY_URL}>
+				{GITHUB_REPOSITORY_URL.match(/\.com\/([^/]+\/[^/]+)/)?.[1]}
+			</a>
+		</p>
+	}
 
 </Layout>
 
