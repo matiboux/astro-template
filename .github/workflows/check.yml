@@ -121,7 +121,7 @@ jobs:
             --env-file .env \
             pull --ignore-buildable
 
-      - name: Build for E2E tests
+      - name: Build for unit tests
         env:
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
@@ -135,7 +135,7 @@ jobs:
             build
           echo "::endgroup::"
 
-      - name: Start E2E tests
+      - name: Start unit tests
         run: |
           # docker compose up
           export DOCKER_UID="$(id -u)"
@@ -144,7 +144,7 @@ jobs:
             --env-file .env \
             up -d
 
-      - name: List E2E tests services
+      - name: List unit tests services
         run: |
           # Set DOCKER_SERVICES environment variable
           DOCKER_SERVICES="$(
@@ -158,7 +158,7 @@ jobs:
           echo "${DOCKER_SERVICES}" >> $GITHUB_ENV
           echo 'GITHUB_ENV_EOF' >> $GITHUB_ENV
 
-      - name: Wait for E2E tests to finish
+      - name: Wait for unit tests to finish
         env:
           DOCKER_SERVICES: ${{ env.DOCKER_SERVICES }}
         run: |
@@ -169,7 +169,7 @@ jobs:
             wait $DOCKER_SERVICES \
             || exit 0
 
-      - name: Print E2E tests logs
+      - name: Print unit tests logs
         env:
           DOCKER_SERVICES: ${{ env.DOCKER_SERVICES }}
         run: |
