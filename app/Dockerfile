@@ -13,7 +13,7 @@ ARG UID=1001
 # Upstream images
 
 FROM node:22-slim AS node_upstream
-FROM bitnami/nginx:1.27 AS nginx_upstream
+FROM bitnami/nginx:1.29 AS nginx_upstream
 
 
 # --
@@ -211,7 +211,7 @@ ARG VERSION_TAG=""
 ENV VERSION_TAG=${VERSION_TAG}
 
 # Build application
-ARG BUILD_CHECK=true
+ARG BUILD_CHECK='true'
 RUN if [ "${BUILD_CHECK}" = "true" ]; then \
 		npm run build; \
 	else \
