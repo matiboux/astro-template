@@ -202,7 +202,8 @@ COPY --link --from=app_build_dev --chown="${UID}:0" /app/node_modules ./node_mod
 # Copy source code
 COPY --link --chown="${UID}:0" ./app .
 
-# Set client environment variables
+# Set app environment variables
+# : Application configuration
 ARG GITHUB_REPOSITORY_URL=""
 ENV GITHUB_REPOSITORY_URL=${GITHUB_REPOSITORY_URL}
 ARG GITHUB_SHA=""
