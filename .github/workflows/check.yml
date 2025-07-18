@@ -69,9 +69,12 @@ jobs:
 
       - name: Build for production
         env:
+          # Build configuration
+          BUILD_CHECK: "true" # Run type checks
+          # Application configuration
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
-          BUILD_CHECK: "true" # Run type checks
+          VERSION_TAG: ${{ vars.VERSION_TAG }}
         run: |
           # docker compose build
           echo "::group::Build details"
@@ -123,8 +126,10 @@ jobs:
 
       - name: Build for unit tests
         env:
+          # Application configuration
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
+          VERSION_TAG: ${{ vars.VERSION_TAG }}
         run: |
           # docker compose build
           echo "::group::Build details"
@@ -208,8 +213,10 @@ jobs:
 
       - name: Build for E2E tests
         env:
+          # Application configuration
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
+          VERSION_TAG: ${{ vars.VERSION_TAG }}
         run: |
           # docker compose build
           echo "::group::Build details"
