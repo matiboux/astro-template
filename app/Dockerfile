@@ -102,9 +102,6 @@ ENV NODE_ENV=development
 # Copy app development dependencies
 COPY --link --from=app_build_dev --chown="${UID}:0" /app/node_modules ./node_modules
 
-# Copy source code
-COPY --link --chown="${UID}:0" ./app .
-
 
 # --
 # Test unit image
@@ -113,6 +110,9 @@ FROM app_test_base AS app_test_unit
 
 # Build arguments
 ARG UID
+
+# Copy source code
+COPY --link --chown="${UID}:0" ./app .
 
 # Run as non-root user
 USER ${UID}:0
@@ -137,6 +137,9 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/etc/playwright/browsers
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
 	--mount=type=cache,sharing=locked,target=/var/lib/apt \
 	pnpm exec playwright install --with-deps
+
+# Copy source code
+COPY --link --chown="${UID}:0" ./app .
 
 # Build application
 RUN pnpm run build-only
