@@ -8,6 +8,10 @@ x-common:
       GITHUB_REPOSITORY_URL: ${GITHUB_REPOSITORY_URL:-}
       GITHUB_SHA: ${GITHUB_SHA:-}
       VERSION_TAG: ${VERSION_TAG:-}
+      # Astro configuration
+      ASTRO_SITE_URL: ${ASTRO_SITE_URL:-}
+      ASTRO_BASE_PATH: ${ASTRO_BASE_PATH:-}
+      ASTRO_ASSETS_PREFIX: ${ASTRO_ASSETS_PREFIX:-}
 
 services:
 

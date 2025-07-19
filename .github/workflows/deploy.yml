@@ -64,6 +64,10 @@ jobs:
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
           VERSION_TAG: ${{ vars.VERSION_TAG }}
+          # Astro configuration
+          ASTRO_SITE_URL: ${{ vars.ASTRO_SITE_URL }}
+          ASTRO_BASE_PATH: ${{ vars.ASTRO_BASE_PATH }}
+          ASTRO_ASSETS_PREFIX: ${{ vars.ASTRO_ASSETS_PREFIX }}
         run: |
           # docker compose build
           export DOCKER_UID="$(id -u)"
