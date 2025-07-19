@@ -9,3 +9,5 @@ export type I18nKeys = { [i18nConfig.defaultLocale]: string } & { -readonly [key
 export type Tail<T extends any[]> = ((...args: T) => any) extends (arg: any, ...tail: infer U) => any ? U : never
 
 export type Diff<T, U> = T extends U ? never : T
+
+export type DefaultLocale = Array<I18nKeys[keyof I18nKeys]>
