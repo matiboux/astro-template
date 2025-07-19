@@ -83,8 +83,8 @@ VOLUME /app
 
 # Run CLI command
 COPY --link --chmod=755 ./docker/cli-entrypoint.sh /usr/local/bin/app-cli-entrypoint
-ENTRYPOINT [ 'app-cli-entrypoint' ]
-CMD [ '--help' ]
+ENTRYPOINT [ "app-cli-entrypoint" ]
+CMD [ "--help" ]
 
 
 # --
@@ -117,7 +117,7 @@ ARG UID
 # Run as non-root user
 USER ${UID}:0
 
-CMD [ 'sh', '-c', 'pnpm run test:vitest' ]
+CMD [ "sh", "-c", "pnpm run test:vitest" ]
 
 
 # --
@@ -144,7 +144,7 @@ RUN pnpm run build-only
 # Run as non-root user
 USER ${UID}:0
 
-CMD [ 'sh', '-c', 'pnpm run test:playwright --output /tmp/playwright/test-results' ]
+CMD [ "sh", "-c", "pnpm run test:playwright --output /tmp/playwright/test-results" ]
 
 
 # --
@@ -182,7 +182,7 @@ ENV PORT=${PORT}
 EXPOSE ${PORT}
 
 # Start development server
-CMD [ 'sh', '-c', 'npm run dev -- --host --port "${PORT}"' ]
+CMD [ "sh", "-c", "npm run dev -- --host --port \"${PORT}\"" ]
 
 
 # --
