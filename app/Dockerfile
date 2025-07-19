@@ -134,7 +134,8 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/etc/playwright/browsers
 # Install Playwright dependencies
 # (hadolint: Ignore non-pinned apt package version)
 # hadolint ignore=DL3008
-RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+RUN --mount=type=bind,source=./app/package.json,target=package.json \
+	--mount=type=cache,sharing=locked,target=/var/cache/apt \
 	--mount=type=cache,sharing=locked,target=/var/lib/apt \
 	pnpm exec playwright install --with-deps
 
