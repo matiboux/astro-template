@@ -1,7 +1,7 @@
 ---
 import type { ImageMetadata } from 'astro'
 
-import type { I18nKeys } from '~/i18n/type'
+import type { I18nKeys } from '~/i18n/types.d.ts'
 
 import { i18nFactory } from '~/i18n'
 const _ = i18nFactory(Astro.currentLocale as any)
