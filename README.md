@@ -25,8 +25,8 @@ The site will be available at [http://localhost:8080](http://localhost:8080).
 Use this command to run the site locally for production:
 
 ```sh
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up
-# or: docker compose -f docker-compose.yml up
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# or: docker compose -f docker-compose.yml up -d
 ```
 
 The site will be available at [http://localhost:8080](http://localhost:8080).
