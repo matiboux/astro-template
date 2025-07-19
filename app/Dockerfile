@@ -65,7 +65,7 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
 	--mount=type=cache,sharing=locked,target=/var/lib/apt \
 	apt-get update && \
 	apt-get install -y --no-install-recommends sudo && \
-	echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+	echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Create user 'user' in group 'root' & 'sudo'
 RUN USERNAME="$(getent passwd "${UID}" | cut -d: -f1)"; \
@@ -83,8 +83,8 @@ VOLUME /app
 
 # Run CLI command
 COPY --link --chmod=755 ./docker/cli-entrypoint.sh /usr/local/bin/app-cli-entrypoint
-ENTRYPOINT [ "app-cli-entrypoint" ]
-CMD [ "--help" ]
+ENTRYPOINT [ 'app-cli-entrypoint' ]
+CMD [ '--help' ]
 
 
 # --
@@ -117,7 +117,7 @@ ARG UID
 # Run as non-root user
 USER ${UID}:0
 
-CMD [ "sh", "-c", "pnpm run test:vitest" ]
+CMD [ 'sh', '-c', 'pnpm run test:vitest' ]
 
 
 # --
@@ -144,7 +144,7 @@ RUN pnpm run build-only
 # Run as non-root user
 USER ${UID}:0
 
-CMD [ "sh", "-c", "pnpm run test:playwright --output /tmp/playwright/test-results" ]
+CMD [ 'sh', '-c', 'pnpm run test:playwright --output /tmp/playwright/test-results' ]
 
 
 # --
@@ -182,7 +182,7 @@ ENV PORT=${PORT}
 EXPOSE ${PORT}
 
 # Start development server
-CMD [ "sh", "-c", "npm run dev -- --host --port \"${PORT}\"" ]
+CMD [ 'sh', '-c', 'npm run dev -- --host --port "${PORT}"' ]
 
 
 # --
@@ -204,16 +204,16 @@ COPY --link --chown="${UID}:0" ./app .
 
 # Set app environment variables
 # : Application configuration
-ARG GITHUB_REPOSITORY_URL=""
+ARG GITHUB_REPOSITORY_URL=''
 ENV GITHUB_REPOSITORY_URL=${GITHUB_REPOSITORY_URL}
-ARG GITHUB_SHA=""
+ARG GITHUB_SHA=''
 ENV GITHUB_SHA=${GITHUB_SHA}
-ARG VERSION_TAG=""
+ARG VERSION_TAG=''
 ENV VERSION_TAG=${VERSION_TAG}
 
 # Build application
 ARG BUILD_CHECK='true'
-RUN if [ "${BUILD_CHECK}" = "true" ]; then \
+RUN if [ "${BUILD_CHECK}" = 'true' ]; then \
 		npm run build; \
 	else \
 		npm run build-only; \
@@ -228,7 +228,7 @@ FROM nginx_upstream AS app_prod
 # Set runtime environment
 ENV APP_ENV=prod
 
-# Copy app production build
+# Copy app production built files
 COPY --from=app_prod_build --link /app/dist .
 
 # Set exposed port
