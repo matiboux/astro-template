@@ -1,5 +1,5 @@
 import { i18n as i18nConfig } from '~/config'
-import type { Locales, I18nKeys } from './type'
+import type { Locales, I18nKeys } from './types.d.ts'
 
 export const defaultLocale = i18nConfig.defaultLocale
 

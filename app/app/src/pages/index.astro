@@ -13,12 +13,7 @@ import { site } from '~/site'
 
 	<p>
 		<span class="icon icon-[mdi--hand-wave] icon-align icon-fw"></span>
-		{_({
-			en: 'Welcome!',
-			fr: 'Bienvenue !',
-			de: 'Willkommen!',
-			es: '¡Bienvenido!',
-		})}
+		{_('Welcome!')}
 	</p>
 
 	<LocalesPicker lang={Astro.currentLocale} />
