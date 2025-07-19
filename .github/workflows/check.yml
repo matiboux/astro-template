@@ -70,20 +70,20 @@ jobs:
       - name: Build for production
         env:
           # Build configuration
-          BUILD_CHECK: "true" # Run type checks
+          BUILD_CHECK: 'true' # Run type checks
           # Application configuration
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
           VERSION_TAG: ${{ vars.VERSION_TAG }}
         run: |
           # docker compose build
-          echo "::group::Build details"
+          echo '::group::Build details'
           export DOCKER_UID="$(id -u)"
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.cicd.yml \
             --env-file .env \
             build
-          echo "::endgroup::"
+          echo '::endgroup::'
 
       - name: Copy application files
         run: |
@@ -98,8 +98,8 @@ jobs:
         run: |
           # Check application files
           [ -d ./app/dist ] && [ $(ls -1 ./app/dist | wc -l) -gt 0 ] \
-            && echo "Application files found" \
-            || ( echo "No application files found" && exit 1 )
+            && echo 'Application files found' \
+            || ( echo 'No application files found' && exit 1 )
 
   # Test Unit job
   test-unit:
@@ -132,13 +132,13 @@ jobs:
           VERSION_TAG: ${{ vars.VERSION_TAG }}
         run: |
           # docker compose build
-          echo "::group::Build details"
+          echo '::group::Build details'
           export DOCKER_UID="$(id -u)"
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.test-unit.yml \
             --env-file .env \
             build
-          echo "::endgroup::"
+          echo '::endgroup::'
 
       - name: Start unit tests
         run: |
@@ -159,7 +159,7 @@ jobs:
               config --services
           )"
           echo "Set DOCKER_SERVICES to '${DOCKER_SERVICES}'"
-          echo "DOCKER_SERVICES<<GITHUB_ENV_EOF" >> $GITHUB_ENV
+          echo 'DOCKER_SERVICES<<GITHUB_ENV_EOF' >> $GITHUB_ENV
           echo "${DOCKER_SERVICES}" >> $GITHUB_ENV
           echo 'GITHUB_ENV_EOF' >> $GITHUB_ENV
 
@@ -185,7 +185,7 @@ jobs:
               -f ./docker-compose.yml -f ./docker-compose.test-unit.yml \
               --env-file .env \
               logs --no-log-prefix $SERVICE
-            echo "::endgroup::"
+            echo '::endgroup::'
           done
 
   # Test E2E job
@@ -219,13 +219,13 @@ jobs:
           VERSION_TAG: ${{ vars.VERSION_TAG }}
         run: |
           # docker compose build
-          echo "::group::Build details"
+          echo '::group::Build details'
           export DOCKER_UID="$(id -u)"
           docker compose \
             -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
             --env-file .env \
             build
-          echo "::endgroup::"
+          echo '::endgroup::'
 
       - name: Start E2E tests
         run: |
@@ -246,7 +246,7 @@ jobs:
               config --services
           )"
           echo "Set DOCKER_SERVICES to '${DOCKER_SERVICES}'"
-          echo "DOCKER_SERVICES<<GITHUB_ENV_EOF" >> $GITHUB_ENV
+          echo 'DOCKER_SERVICES<<GITHUB_ENV_EOF' >> $GITHUB_ENV
           echo "${DOCKER_SERVICES}" >> $GITHUB_ENV
           echo 'GITHUB_ENV_EOF' >> $GITHUB_ENV
 
@@ -272,5 +272,5 @@ jobs:
               -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
               --env-file .env \
               logs --no-log-prefix $SERVICE
-            echo "::endgroup::"
+            echo '::endgroup::'
           done
