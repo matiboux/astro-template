@@ -50,10 +50,6 @@ export function i18n(
 	...args: any[]
 ): string
 {
-	// const value = typeof keys === 'string'
-	// 	? ((i18nConfig.localeKeys?.[locale!] ?? i18nConfig.localeKeys?.[defaultLocale])?.[keys] ?? keys)
-	// 	: (keys[locale!] ?? keys[defaultLocale] ?? Object.values(keys)[0] ?? '')
-
 	let value: string = ''
 
 	if (typeof keys !== 'string')
