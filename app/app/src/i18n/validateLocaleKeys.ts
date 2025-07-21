@@ -48,6 +48,7 @@ export function diffLocaleKeys(
 }
 
 export function validateLocaleKeys(
+	locale: string,
 	referenceLocaleKeys: Record<string, any>,
 	currentLocaleKeys: Record<string, any>,
 ): Record<string, any>
@@ -55,7 +56,7 @@ export function validateLocaleKeys(
 	const diff = diffLocaleKeys(referenceLocaleKeys, currentLocaleKeys)
 	if (diff)
 	{
-		console.warn('Locale keys validation failed:', diff)
+		console.warn(`Failed to validate "${locale}" locale keys:`, diff)
 	}
 
 	return currentLocaleKeys
