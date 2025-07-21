@@ -1,4 +1,4 @@
-import type { DefaultLocaleConst } from './en.ts'
+import type { DefaultLocaleConst } from './keys.ts'
 
 export type LocaleKeys = DefaultLocaleConst[number]
 
