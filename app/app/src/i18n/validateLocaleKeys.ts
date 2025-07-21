@@ -3,7 +3,7 @@ export function diffLocaleKeys(
 	currentLocaleKeys: Record<string, any>,
 ): Record<string, 'missing' | 'extra'> | undefined
 {
-	const diffKeys = {}
+	const diffKeys: Record<string, 'missing' | 'extra'> = {}
 
 	const referenceKeys = Object.keys(referenceLocaleKeys)
 	const currentKeys = Object.keys(currentLocaleKeys)
