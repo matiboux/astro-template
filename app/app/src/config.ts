@@ -1,9 +1,9 @@
 import type { AstroConfig } from 'astro'
 
-import en from './locales/en'
-import fr from './locales/fr'
-import de from './locales/de'
-import es from './locales/es'
+import en from './i18n/locales/en'
+import fr from './i18n/locales/fr'
+import de from './i18n/locales/de'
+import es from './i18n/locales/es'
 
 type LocaleKeys = Record<string, Record<string, string>>
 type I18nConfig = AstroConfig['i18n'] & { localeKeys?: LocaleKeys }
