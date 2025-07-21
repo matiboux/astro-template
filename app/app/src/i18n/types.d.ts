@@ -1,4 +1,5 @@
 import { i18n as i18nConfig } from '~/config'
+import type { LocaleKeys, I18nConfig } from '~/config.ts'
 
 export type ExtractLocales<T> = T extends { path: infer U } ? U : T
 
@@ -11,3 +12,5 @@ export type Tail<T extends any[]> = ((...args: T) => any) extends (arg: any, ...
 export type Diff<T, U> = T extends U ? never : T
 
 export type DefaultLocale = Array<I18nKeys[keyof I18nKeys]>
+
+export type { LocaleKeys, I18nConfig }

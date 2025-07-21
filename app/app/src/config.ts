@@ -5,8 +5,14 @@ import fr from './i18n/locales/fr'
 import de from './i18n/locales/de'
 import es from './i18n/locales/es'
 
-type LocaleKeys = Record<string, Record<string, string>>
-type I18nConfig = AstroConfig['i18n'] & { localeKeys?: LocaleKeys }
+export interface LocaleKeys
+{
+	[key: string]: LocaleKeys | string
+}
+
+export type LocalesKeys = Record<string, LocaleKeys>
+
+export type I18nConfig = AstroConfig['i18n'] & { localeKeys?: LocalesKeys }
 
 export const i18n: I18nConfig = {
 	locales: [
