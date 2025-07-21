@@ -40,7 +40,7 @@ export function diffLocaleKeys(
 		)
 		for (const nestedKey in nestedDiffKeys)
 		{
-			diffKeys[`${key}.${nestedKey}`] = nestedDiffKeys[nestedKey]
+			diffKeys[`${key}.${nestedKey}`] = nestedDiffKeys[nestedKey]!
 		}
 	}
 
