@@ -207,7 +207,7 @@ COPY --link --from=app_build_dev --chown="${UID}:0" /app/node_modules ./node_mod
 COPY --link --chown="${UID}:0" ./app .
 
 # Set app environment variables
-# : Application configuration
+# : Deployment configuration
 ARG GITHUB_REPOSITORY_URL=''
 ENV GITHUB_REPOSITORY_URL=${GITHUB_REPOSITORY_URL}
 ARG GITHUB_SHA=''
@@ -221,6 +221,8 @@ ARG ASTRO_BASE_PATH=''
 ENV ASTRO_BASE_PATH=${ASTRO_BASE_PATH}
 ARG ASTRO_ASSETS_PREFIX=''
 ENV ASTRO_ASSETS_PREFIX=${ASTRO_ASSETS_PREFIX}
+# : Application configuration
+# Add env vars for your application here.
 
 # Build application
 ARG BUILD_CHECK='true'
