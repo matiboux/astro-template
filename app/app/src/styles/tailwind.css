@@ -1,4 +1,10 @@
 @import "tailwindcss";
-@plugin "@iconify/tailwind4";
+/* If you'd like to disable Preflight, use this instead:
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+*/
 
 @config "../../tailwind.config.mjs";
+
+@plugin "@iconify/tailwind4";
