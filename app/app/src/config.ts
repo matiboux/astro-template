@@ -14,26 +14,30 @@ export type LocalesKeys = Record<string, LocaleKeys>
 
 export type I18nConfig = AstroConfig['i18n'] & { localeKeys?: LocalesKeys }
 
-export const i18n: I18nConfig = {
-	locales: [
-		{
-			codes: ['en', 'en_US'],
-			path: 'en',
-		},
-		{
-			codes: ['fr', 'fr_FR'],
-			path: 'fr',
-		},
-		{
-			codes: ['de', 'de_DE'],
-			path: 'de',
-		},
-		{
-			codes: ['es', 'es_ES'],
-			path: 'es',
-		},
-	],
-	defaultLocale: 'en',
+export const i18nLocales = [
+	{
+		codes: ['en', 'en_US'],
+		path: 'en',
+	},
+	{
+		codes: ['fr', 'fr_FR'],
+		path: 'fr',
+	},
+	{
+		codes: ['de', 'de_DE'],
+		path: 'de',
+	},
+	{
+		codes: ['es', 'es_ES'],
+		path: 'es',
+	},
+] as const satisfies I18nConfig['locales']
+
+export const i18nDefaultLocale = i18nLocales[0].path
+
+export const i18n = {
+	locales: i18nLocales,
+	defaultLocale: i18nDefaultLocale,
 	fallback: {
 		fr: 'en',
 		de: 'en',
@@ -50,4 +54,4 @@ export const i18n: I18nConfig = {
 		redirectToDefaultLocale: true,
 		fallbackType: 'rewrite',
 	},
-}
+} as const satisfies I18nConfig
