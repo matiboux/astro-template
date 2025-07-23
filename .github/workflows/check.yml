@@ -71,7 +71,7 @@ jobs:
         env:
           # Build configuration
           BUILD_CHECK: 'true' # Run type checks
-          # Application configuration
+          # Deployment configuration
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
           VERSION_TAG: ${{ vars.VERSION_TAG }}
@@ -79,6 +79,8 @@ jobs:
           ASTRO_SITE_URL: ${{ vars.ASTRO_SITE_URL }}
           ASTRO_BASE_PATH: ${{ vars.ASTRO_BASE_PATH }}
           ASTRO_ASSETS_PREFIX: ${{ vars.ASTRO_ASSETS_PREFIX }}
+          # Application configuration
+          # Add env vars for your application here.
         run: |
           # docker compose build
           echo '::group::Build details'
@@ -130,7 +132,7 @@ jobs:
 
       - name: Build for unit tests
         env:
-          # Application configuration
+          # Deployment configuration
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
           VERSION_TAG: ${{ vars.VERSION_TAG }}
@@ -138,6 +140,8 @@ jobs:
           ASTRO_SITE_URL: ${{ vars.ASTRO_SITE_URL }}
           ASTRO_BASE_PATH: ${{ vars.ASTRO_BASE_PATH }}
           ASTRO_ASSETS_PREFIX: ${{ vars.ASTRO_ASSETS_PREFIX }}
+          # Application configuration
+          # Add env vars for your application here.
         run: |
           # docker compose build
           echo '::group::Build details'
@@ -241,7 +245,7 @@ jobs:
 
       - name: Build for E2E tests
         env:
-          # Application configuration
+          # Deployment configuration
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
           VERSION_TAG: ${{ vars.VERSION_TAG }}
@@ -249,6 +253,8 @@ jobs:
           ASTRO_SITE_URL: ${{ vars.ASTRO_SITE_URL }}
           ASTRO_BASE_PATH: ${{ vars.ASTRO_BASE_PATH }}
           ASTRO_ASSETS_PREFIX: ${{ vars.ASTRO_ASSETS_PREFIX }}
+          # Application configuration
+          # Add env vars for your application here.
         run: |
           # docker compose build
           echo '::group::Build details'

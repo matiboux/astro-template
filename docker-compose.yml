@@ -4,7 +4,7 @@ x-common:
 
   app:
     environment: &app_environment
-      # Application configuration
+      # Deployment configuration
       GITHUB_REPOSITORY_URL: ${GITHUB_REPOSITORY_URL:-}
       GITHUB_SHA: ${GITHUB_SHA:-}
       VERSION_TAG: ${VERSION_TAG:-}
@@ -12,6 +12,8 @@ x-common:
       ASTRO_SITE_URL: ${ASTRO_SITE_URL:-}
       ASTRO_BASE_PATH: ${ASTRO_BASE_PATH:-}
       ASTRO_ASSETS_PREFIX: ${ASTRO_ASSETS_PREFIX:-}
+      # Application configuration
+      # Add env vars for your application here.
 
 services:
 
