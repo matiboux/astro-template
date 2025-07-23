@@ -25,6 +25,7 @@ services:
       app-volumes:
         condition: service_completed_successfully
     user: ${DOCKER_UID:-${UID:-1000}}
+    environment: !reset null
     command: [ 'sh', '-c', 'rm -rf /dist/* && cp -r /app/dist/* /dist' ]
     volumes:
       - ./app/dist:/dist
