@@ -6,14 +6,9 @@
     "paths": {
       "/*": [ "*" ],
       "~/*": [ "src/*" ]
-    }
-  },
-  "exclude": [
-    "${configDir}/dist",
-    "${configDir}/test",
-    "${configDir}/playwright*.ts",
-    "${configDir}/vitest*.ts",
-    "${configDir}/**/*.test.ts",
-    "${configDir}/**/*.spec.ts"
-  ]
+    },
+    "types": [
+      "vitest/globals"
+    ]
+  }
 }
