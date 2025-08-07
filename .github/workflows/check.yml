@@ -15,18 +15,10 @@ on:
     branches:
       # Production
       - main
-      - master
-      - prod
-      - production
       # Staging
       - staging
-      - preprod
-      - preproduction
       # Development
       - dev
-      - develop
-      - development
-      - test
     paths:
       # CI/CD files
       - '.github/workflows/check.yml'
