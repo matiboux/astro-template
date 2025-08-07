@@ -1,5 +1,13 @@
 name: Check CI
 
+# GitHub variables:
+# - VERSION_TAG
+# - ASTRO_SITE_URL
+# - ASTRO_BASE_PATH
+# - ASTRO_ASSETS_PREFIX
+
+# GitHub secrets: N/A
+
 on:
 
   # Run on pull requests to primary branches
@@ -20,7 +28,7 @@ on:
       - development
       - test
     paths:
-      # CI files
+      # CI/CD files
       - '.github/workflows/check.yml'
       - 'docker-compose.yml'
       - 'docker-compose.cicd.yml'
