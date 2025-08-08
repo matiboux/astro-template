@@ -7,6 +7,11 @@ import { i18nFactory } from '~/i18n'
 const _ = i18nFactory(Astro.currentLocale as any)
 
 import { site } from '~/site'
+
+const githubRepositoryUrl = (
+	GITHUB_REPOSITORY_URL ||
+	'https://github.com/matiboux/astro-template'
+)
 ---
 
 <Layout>
@@ -32,7 +37,7 @@ import { site } from '~/site'
 		es: 'Versión: <code>{version}</code>.',
 	}, { version: site.version || 'dev' })} />
 
-	{GITHUB_REPOSITORY_URL &&
+	{githubRepositoryUrl &&
 		<p>
 			{_({
 				en: 'GitHub repository:',
@@ -40,8 +45,8 @@ import { site } from '~/site'
 				de: 'GitHub-Repository:',
 				es: 'Repositorio de GitHub:',
 			})}
-			<a href={GITHUB_REPOSITORY_URL}>
-				{GITHUB_REPOSITORY_URL.match(/\.com\/([^/]+\/[^/]+)/)?.[1]}
+			<a href={githubRepositoryUrl}>
+				{githubRepositoryUrl.match(/\.com\/([^/]+\/[^/]+)/)?.[1]}
 			</a>
 		</p>
 	}
@@ -61,5 +66,9 @@ p {
 	:global(code) {
 		@apply bg-gray-100 px-1 border border-gray-300 rounded;
 	}
+}
+
+a {
+	@apply text-blue-600 hover:text-blue-700 hover:underline;
 }
 </style>
