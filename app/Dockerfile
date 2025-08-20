@@ -186,7 +186,7 @@ ENV PORT=${PORT}
 EXPOSE ${PORT}
 
 # Start development server
-CMD [ "sh", "-c", "pnpm run dev -- --host --port \"${PORT}\"" ]
+CMD [ "sh", "-c", "pnpm run dev --host --port \"${PORT}\"" ]
 
 
 # --
