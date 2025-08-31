@@ -56,6 +56,9 @@ FROM app_build_base AS app_build_dev
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 	pnpm install --frozen-lockfile
 
+# Create Astro runtime directory
+RUN mkdir -p ./.astro
+
 
 # --
 # CLI image
@@ -166,14 +169,14 @@ ARG UID
 
 # Set runtime environment
 ENV APP_ENV=dev
-ENV NODE_ENV=development
 
-# Copy app development dependencies
+# Copy development dependencies
+ENV NODE_ENV=development
+COPY --link --from=app_build_dev --chown="${UID}:0" /app/.astro ./.astro
 COPY --link --from=app_build_dev --chown="${UID}:0" /app/node_modules ./node_modules
 
 # Copy source code
 COPY --link --chown="${UID}:0" ./app .
-RUN mkdir -p ./.astro && chown -R "${UID}:0" ./.astro
 
 # Create user 'user' in group 'root'
 RUN USERNAME="$(getent passwd "${UID}" | cut -d: -f1)"; \
@@ -204,9 +207,9 @@ ARG UID
 
 # Set runtime environment
 ENV APP_ENV=prod
-ENV NODE_ENV=production
 
-# Copy app development dependencies
+# Copy development dependencies
+ENV NODE_ENV=development
 COPY --link --from=app_build_dev --chown="${UID}:0" /app/node_modules ./node_modules
 
 # Copy source code
