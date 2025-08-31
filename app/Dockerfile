@@ -29,9 +29,9 @@ ENV HOME=/tmp
 
 
 # --
-# Build base image
+# Build binary base image
 
-FROM app_base AS app_build_base
+FROM app_base AS app_build_binary_base
 
 # Install pnpm
 RUN --mount=type=cache,target=~/.npm \
@@ -39,14 +39,20 @@ RUN --mount=type=cache,target=~/.npm \
 
 
 # --
+# Build base image
+
+FROM app_build_binary_base AS app_build_base
+
+# Copy build configuration
+COPY --link ./app/package.json ./app/pnpm-lock.yaml ./
+
+
+# --
 # Build dev image
 
 FROM app_build_base AS app_build_dev
 
-# Copy app build configuration
-COPY --link ./app/package.json ./app/pnpm-lock.yaml ./
-
-# Install app development dependencies
+# Install development dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 	pnpm install --frozen-lockfile
 
@@ -54,7 +60,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 # --
 # CLI image
 
-FROM app_build_base AS app_cli
+FROM app_build_binary_base AS app_cli
 
 ARG UID
 
@@ -90,7 +96,7 @@ CMD [ "--help" ]
 # --
 # Test base image
 
-FROM app_build_base AS app_test_base
+FROM app_build_binary_base AS app_test_base
 
 # Build arguments
 ARG UID
@@ -154,7 +160,7 @@ CMD [ "sh", "-c", "pnpm run test:playwright --output /tmp/playwright/test-result
 # --
 # Dev image
 
-FROM app_build_base AS app_dev
+FROM app_build_binary_base AS app_dev
 
 ARG UID
 
@@ -192,7 +198,7 @@ CMD [ "sh", "-c", "pnpm run dev --host --port \"${PORT}\"" ]
 # --
 # Prod build image
 
-FROM app_build_base AS app_prod_build
+FROM app_build_binary_base AS app_prod_build
 
 ARG UID
 
