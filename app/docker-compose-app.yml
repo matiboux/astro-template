@@ -17,7 +17,7 @@ x-common:
     ASTRO_BASE_PATH: ${ASTRO_BASE_PATH:-}
     ASTRO_ASSETS_PREFIX: ${ASTRO_ASSETS_PREFIX:-}
     # Application
-    # Add env vars for your application here.
+    # (Add env vars for your application here.)
 
 services:
 
