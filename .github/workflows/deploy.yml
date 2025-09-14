@@ -6,7 +6,8 @@ name: Deploy CD
 # - ASTRO_BASE_PATH
 # - ASTRO_ASSETS_PREFIX
 
-# GitHub secrets: N/A
+# GitHub secrets:
+# - CONFIG_PROD (optional)
 
 on:
 
@@ -51,6 +52,62 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install jq
+        run: |
+          # apt-get install jq
+          sudo apt-get -q update
+          sudo apt-get -qy install --no-install-recommends jq
+
+      # Preparation steps
+
+      - name: Load app config in environment
+        env:
+          GITHUB_VARS: ${{ toJson(vars) }}
+          CONFIG_PROD: ${{ secrets.CONFIG_PROD }}
+        run: |
+          # Load app config in environment
+
+          load_var() {
+
+            local var_name="$1"
+            local fallback_github_vars="$2"
+
+            if [ -z "${var_name}" ]; then
+              echo "ERROR: Variable name is empty" >&2
+              exit 1
+            fi
+
+            # Check if the variable is set in CONFIG_PROD
+            local var_value=$(echo "${CONFIG_PROD}" | jq -rcM --arg var_name "${var_name}" '.[$var_name]')
+            if [ -z "${var_value}" ] || [ "${var_value}" = "null" ]; then
+              echo "INFO: Variable '${var_name}' not found in CONFIG_PROD" >&2
+              exit 0
+            fi
+
+            if [ -n "${var_value}" ]; then
+              echo "${var_value}" | sed 's/^ */::add-mask::/'
+            fi
+            echo "Set ${var_name} (secret)"
+            echo "${var_name}<<GITHUB_ENV_EOF" >> "$GITHUB_ENV"
+            echo "${var_value}" >> "$GITHUB_ENV"
+            echo 'GITHUB_ENV_EOF' >> "$GITHUB_ENV"
+          }
+
+          echo '::group::Load app config variables'
+
+          # Deployment
+          load_var 'VERSION_TAG'
+
+          # Astro
+          load_var 'ASTRO_SITE_URL'
+          load_var 'ASTRO_BASE_PATH'
+          load_var 'ASTRO_ASSETS_PREFIX'
+
+          # Application
+          # (Load env vars for your application here.)
+
+          echo '::endgroup::'
+
       # Execution steps
 
       - name: Pull dependencies
@@ -68,11 +125,11 @@ jobs:
           # Deployment
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
-          VERSION_TAG: ${{ vars.VERSION_TAG }}
+          VERSION_TAG: ${{ env.VERSION_TAG != '' && env.VERSION_TAG || vars.VERSION_TAG }}
           # Astro
-          ASTRO_SITE_URL: ${{ vars.ASTRO_SITE_URL }}
-          ASTRO_BASE_PATH: ${{ vars.ASTRO_BASE_PATH }}
-          ASTRO_ASSETS_PREFIX: ${{ vars.ASTRO_ASSETS_PREFIX }}
+          ASTRO_SITE_URL: ${{ env.ASTRO_SITE_URL != '' && env.ASTRO_SITE_URL || vars.ASTRO_SITE_URL }}
+          ASTRO_BASE_PATH: ${{ env.ASTRO_BASE_PATH != '' && env.ASTRO_BASE_PATH || vars.ASTRO_BASE_PATH }}
+          ASTRO_ASSETS_PREFIX: ${{ env.ASTRO_ASSETS_PREFIX != '' && env.ASTRO_ASSETS_PREFIX || vars.ASTRO_ASSETS_PREFIX }}
           # Application
           # (Add env vars for your application here.)
         run: |
