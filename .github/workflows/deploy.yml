@@ -177,8 +177,8 @@ jobs:
           # Build
           BUILD_CHECK: 'false' # Skip type checks
           # Deployment
-          GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
-          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REPOSITORY_URL: ${{ env.GITHUB_REPOSITORY_URL }}
+          GITHUB_SHA: ${{ env.GITHUB_SHA }}
           VERSION_TAG: ${{ env.VERSION_TAG }}
           # Astro
           ASTRO_SITE_URL: ${{ env.ASTRO_SITE_URL }}
