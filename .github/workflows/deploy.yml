@@ -74,14 +74,24 @@ jobs:
 
             if [ -z "${var_name}" ]; then
               echo "ERROR: Variable name is empty" >&2
-              exit 1
+              return 1
             fi
 
             # Check if the variable is set in CONFIG_PROD
             local var_value=$(echo "${CONFIG_PROD}" | jq -rcM --arg var_name "${var_name}" '.[$var_name]')
             if [ -z "${var_value}" ] || [ "${var_value}" = "null" ]; then
               echo "INFO: Variable '${var_name}' not found in CONFIG_PROD" >&2
-              exit 0
+
+              if [ "${fallback_github_vars}" != 'true' ]; then
+                return 0
+              fi
+
+              # Check if the variable is set in GITHUB_VARS
+              var_value=$(echo "${GITHUB_VARS}" | jq -rcM --arg var_name "${var_name}" '.[$var_name]')
+              if [ -z "${var_value}" ] || [ "${var_value}" = "null" ]; then
+                echo "INFO: Variable '${var_name}' not found in GITHUB_VARS" >&2
+                return 0
+              fi
             fi
 
             if [ -n "${var_value}" ]; then
@@ -96,12 +106,12 @@ jobs:
           echo '::group::Load app config variables'
 
           # Deployment
-          load_var 'VERSION_TAG'
+          load_var 'VERSION_TAG' 'true'
 
           # Astro
-          load_var 'ASTRO_SITE_URL'
-          load_var 'ASTRO_BASE_PATH'
-          load_var 'ASTRO_ASSETS_PREFIX'
+          load_var 'ASTRO_SITE_URL' 'true'
+          load_var 'ASTRO_BASE_PATH' 'true'
+          load_var 'ASTRO_ASSETS_PREFIX' 'true'
 
           # Application
           # (Load env vars for your application here.)
@@ -125,11 +135,11 @@ jobs:
           # Deployment
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
-          VERSION_TAG: ${{ env.VERSION_TAG != '' && env.VERSION_TAG || vars.VERSION_TAG }}
+          VERSION_TAG: ${{ env.VERSION_TAG }}
           # Astro
-          ASTRO_SITE_URL: ${{ env.ASTRO_SITE_URL != '' && env.ASTRO_SITE_URL || vars.ASTRO_SITE_URL }}
-          ASTRO_BASE_PATH: ${{ env.ASTRO_BASE_PATH != '' && env.ASTRO_BASE_PATH || vars.ASTRO_BASE_PATH }}
-          ASTRO_ASSETS_PREFIX: ${{ env.ASTRO_ASSETS_PREFIX != '' && env.ASTRO_ASSETS_PREFIX || vars.ASTRO_ASSETS_PREFIX }}
+          ASTRO_SITE_URL: ${{ env.ASTRO_SITE_URL }}
+          ASTRO_BASE_PATH: ${{ env.ASTRO_BASE_PATH }}
+          ASTRO_ASSETS_PREFIX: ${{ env.ASTRO_ASSETS_PREFIX }}
           # Application
           # (Add env vars for your application here.)
         run: |
