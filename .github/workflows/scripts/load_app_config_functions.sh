@@ -39,7 +39,7 @@ load_value() {
 	# Variable not found
 	var_value=''
 	var_value_source='NOT_SET'
-	return 1
+	return 0
 }
 
 load_var() {
@@ -56,10 +56,11 @@ load_var() {
 	local var_value=''
 	local var_value_source=''
 	load_value "${var_name}" "${fallback_github_vars}" "${default_value}"
-	local load_status=$?
 
-	if [ ${load_status} -ne 0 ]; then
+	if [ ${var_value_source} == 'NOT_SET' ]; then
 		echo "DEBUG: Variable ${var_name} is not set" >&2
+	else if [ ${var_value_source} == 'DEFAULT' ]; then
+		echo "DEBUG: Variable ${var_name} loaded from default value" >&2
 	else
 		echo "DEBUG: Variable ${var_name} loaded from '${var_value_source}'" >&2
 	fi
