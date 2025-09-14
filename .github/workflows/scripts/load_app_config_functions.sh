@@ -59,7 +59,7 @@ load_var() {
 
 	if [ ${var_value_source} == 'NOT_SET' ]; then
 		echo "DEBUG: Variable ${var_name} is not set" >&2
-	else if [ ${var_value_source} == 'DEFAULT' ]; then
+	elif [ ${var_value_source} == 'DEFAULT' ]; then
 		echo "DEBUG: Variable ${var_name} loaded from default value" >&2
 	else
 		echo "DEBUG: Variable ${var_name} loaded from '${var_value_source}'" >&2
