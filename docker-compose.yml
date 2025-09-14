@@ -1,0 +1,9 @@
+# Services definition for building & deploying
+
+services:
+
+  app:
+    # Extend
+    extends:
+      file: ./app/docker-compose-app.yml
+      service: app
