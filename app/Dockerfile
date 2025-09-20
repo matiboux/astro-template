@@ -34,7 +34,7 @@ ENV HOME=/tmp
 FROM node_base AS node_build
 
 # Install pnpm
-RUN --mount=type=cache,target=~/.npm \
+RUN --mount=type=cache,id=npm,target=/root/.npm \
 	npm install -g pnpm
 
 
@@ -70,14 +70,16 @@ ARG UID
 # Install sudo
 # (hadolint: Ignore non-pinned apt package version)
 # hadolint ignore=DL3008
-RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
-	--mount=type=cache,sharing=locked,target=/var/lib/apt \
+RUN --mount=type=cache,sharing=locked,id=apt-cache,target=/var/cache/apt \
+	--mount=type=cache,sharing=locked,id=apt-lib,target=/var/lib/apt \
 	apt-get update && \
 	apt-get install -y --no-install-recommends sudo && \
 	echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Create user 'user' in group 'root' & 'sudo'
-RUN USERNAME="$(getent passwd "${UID}" | cut -d: -f1)"; \
+# (hadolint: Ignore unchecked pipe failures)
+# hadolint ignore=DL4006
+RUN USERNAME="$(getent passwd "${UID}" 2>/dev/null | cut -d: -f1)"; \
 	if [ -z "${USERNAME}" ]; then \
 		useradd -lm -u "${UID}" -U -G 0,sudo user; \
 	else \
@@ -101,15 +103,14 @@ CMD [ "--help" ]
 
 FROM node_build AS test_base
 
-# Build arguments
 ARG UID
 
 # Set runtime environment
 ENV APP_ENV=test
-ENV NODE_ENV=development
 
-# Copy app development dependencies
-COPY --link --from=deps_dev --chown="${UID}:0" /app/node_modules ./node_modules
+# Copy development dependencies
+ENV NODE_ENV=development
+COPY --from=deps_dev --link --chown="${UID}:0" /app/node_modules ./node_modules
 
 
 # --
@@ -117,7 +118,6 @@ COPY --link --from=deps_dev --chown="${UID}:0" /app/node_modules ./node_modules
 
 FROM test_base AS test_unit
 
-# Build arguments
 ARG UID
 
 # Copy source code
@@ -137,16 +137,10 @@ FROM test_base AS test_e2e
 # Build arguments
 ARG UID
 
-# Configure Playwright
-ENV PLAYWRIGHT_BROWSERS_PATH=/etc/playwright/browsers
-
 # Install Playwright dependencies
-# (hadolint: Ignore non-pinned apt package version)
-# hadolint ignore=DL3008
-RUN --mount=type=bind,source=./app/package.json,target=package.json \
-	--mount=type=cache,sharing=locked,target=/var/cache/apt \
-	--mount=type=cache,sharing=locked,target=/var/lib/apt \
-	pnpm exec playwright install --with-deps
+ENV PLAYWRIGHT_BROWSERS_PATH=/etc/playwright/browsers
+COPY --from=deps_dev --link --chown="${UID}:0" /app/package.json /app/pnpm-lock.yaml ./
+RUN pnpm exec playwright install --with-deps
 
 # Copy source code
 COPY --link --chown="${UID}:0" ./app .
@@ -179,7 +173,9 @@ COPY --link --from=deps_dev --chown="${UID}:0" /app/node_modules ./node_modules
 COPY --link --chown="${UID}:0" ./app .
 
 # Create user 'user' in group 'root'
-RUN USERNAME="$(getent passwd "${UID}" | cut -d: -f1)"; \
+# (hadolint: Ignore unchecked pipe failures)
+# hadolint ignore=DL4006
+RUN USERNAME="$(getent passwd "${UID}" 2>/dev/null | cut -d: -f1)"; \
 	if [ -z "${USERNAME}" ]; then \
 		useradd -lm -u "${UID}" -U -G 0 user; \
 	else \
