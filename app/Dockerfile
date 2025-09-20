@@ -123,7 +123,7 @@ ENV APP_ENV=test
 
 # Copy development dependencies
 ENV NODE_ENV=development
-COPY --from=deps_dev --link --chown="${UID}:0" /app/node_modules ./node_modules
+COPY --from=deps_dev --link --chown="${UID}:0" /app/node_modules/ ./node_modules/
 
 
 # --
@@ -134,7 +134,7 @@ FROM test_base AS test_unit
 ARG UID
 
 # Copy source code
-COPY --link --chown="${UID}:0" ./app .
+COPY --link --chown="${UID}:0" ./app/ ./
 
 # Run as non-root user
 USER ${UID}:0
@@ -156,7 +156,7 @@ COPY --from=deps_dev --link --chown="${UID}:0" /app/package.json /app/pnpm-lock.
 RUN pnpm exec playwright install --with-deps
 
 # Copy source code
-COPY --link --chown="${UID}:0" ./app .
+COPY --link --chown="${UID}:0" ./app/ ./
 
 # Build application
 RUN pnpm run build-only
@@ -179,11 +179,11 @@ ENV APP_ENV=dev
 
 # Copy development dependencies
 ENV NODE_ENV=development
-COPY --link --from=deps_dev --chown="${UID}:0" /app/.astro ./.astro
-COPY --link --from=deps_dev --chown="${UID}:0" /app/node_modules ./node_modules
+COPY --from=deps_dev --link --chown="${UID}:0" /app/.astro/ ./.astro/
+COPY --from=deps_dev --link --chown="${UID}:0" /app/node_modules/ ./node_modules/
 
 # Copy source code
-COPY --link --chown="${UID}:0" ./app .
+COPY --link --chown="${UID}:0" ./app/ ./
 
 # Create user 'user' in group 'root'
 # (hadolint: Ignore unchecked pipe failures)
@@ -219,10 +219,10 @@ ENV APP_ENV=prod
 
 # Copy development dependencies
 ENV NODE_ENV=development
-COPY --link --from=deps_dev --chown="${UID}:0" /app/node_modules ./node_modules
+COPY --from=deps_dev --link --chown="${UID}:0" /app/node_modules/ ./node_modules/
 
 # Copy source code
-COPY --link --chown="${UID}:0" ./app .
+COPY --link --chown="${UID}:0" ./app/ ./
 
 # Set app environment variables
 # : Deployment configuration
@@ -260,7 +260,7 @@ FROM nginx_upstream AS app_prod
 ENV APP_ENV=prod
 
 # Copy app production built files
-COPY --from=app_prod_build --link /app/dist .
+COPY --from=app_prod_build --link /app/dist/ ./
 
 # Set exposed port
 ARG PORT=8080
