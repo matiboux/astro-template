@@ -99,6 +99,19 @@ CMD [ "--help" ]
 
 
 # --
+# Lint image
+
+FROM node_build AS app_lint
+
+ARG UID
+
+# Run as non-root user
+USER ${UID}:0
+
+CMD [ "/bin/sh", "-c", "exit 0" ]
+
+
+# --
 # Test base image
 
 FROM node_build AS test_base
