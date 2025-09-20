@@ -31,7 +31,7 @@ ENV HOME=/tmp
 # --
 # Build binary base image
 
-FROM node_base AS node_build_base
+FROM node_base AS node_build
 
 # Install pnpm
 RUN --mount=type=cache,target=~/.npm \
@@ -41,7 +41,7 @@ RUN --mount=type=cache,target=~/.npm \
 # --
 # Build base image
 
-FROM node_build_base AS deps_base
+FROM node_build AS deps_base
 
 # Copy build configuration
 COPY --link ./app/package.json ./app/pnpm-lock.yaml ./
@@ -63,7 +63,7 @@ RUN mkdir -p ./.astro
 # --
 # CLI image
 
-FROM node_build_base AS app_cli
+FROM node_build AS app_cli
 
 ARG UID
 
@@ -99,7 +99,7 @@ CMD [ "--help" ]
 # --
 # Test base image
 
-FROM node_build_base AS test_base
+FROM node_build AS test_base
 
 # Build arguments
 ARG UID
@@ -163,7 +163,7 @@ CMD [ "sh", "-c", "pnpm run test:playwright --output /tmp/playwright/test-result
 # --
 # Dev image
 
-FROM node_build_base AS app_dev
+FROM node_build AS app_dev
 
 ARG UID
 
@@ -201,7 +201,7 @@ CMD [ "sh", "-c", "pnpm run dev --host --port \"${PORT}\"" ]
 # --
 # Prod build image
 
-FROM node_build_base AS app_prod_build
+FROM node_build AS app_prod_build
 
 ARG UID
 
