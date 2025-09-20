@@ -55,7 +55,7 @@ jobs:
       # Dependency steps
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Execution steps
 
@@ -118,7 +118,7 @@ jobs:
       # Dependency steps
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Execution steps
 
@@ -231,7 +231,7 @@ jobs:
       # Dependency steps
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Execution steps
 
