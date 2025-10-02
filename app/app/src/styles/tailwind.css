@@ -6,7 +6,7 @@
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities);
 
-/* Iconify Plugin for Tailwind CSS. */
+/* Iconify Plugin for Tailwind CSS */
 @plugin "@iconify/tailwind4";
 
 /* Custom theme configuration */
