@@ -17,8 +17,7 @@
 # -- Editor rules:
 
 # VS Code
-**/.vscode/**/*
-!**/.vscode/extensions.json
+**/.vscode/
 
 # Jetbrains
 **/.idea/
@@ -58,6 +57,3 @@ data/
 # Docker configuration files
 Dockerfile
 docker-compose*.yml
-
-# Dotfiles
-**/.*
