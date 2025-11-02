@@ -1,5 +1,6 @@
 ---
 import Layout from '~/layouts/Layout.astro'
+import LocalesPicker from '~/components/LocalesPicker/LocalesPicker.astro'
 
 import { i18nFactory } from '~/i18n'
 const _ = i18nFactory(Astro.currentLocale as any)
@@ -12,6 +13,8 @@ const _ = i18nFactory(Astro.currentLocale as any)
 		<span class="icon icon-[mdi--emoticon-sad] icon-align icon-fw"></span>
 		{_('Page not found')}
 	</p>
+
+	<LocalesPicker lang={Astro.currentLocale} />
 
 </Layout>
 
