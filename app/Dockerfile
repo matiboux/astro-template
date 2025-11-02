@@ -134,6 +134,7 @@ FROM test_base AS test_unit
 ARG UID
 
 # Copy source code
+RUN chown "${UID}:0" .
 COPY --link --chown="${UID}:0" ./app/ ./
 
 # Run as non-root user
@@ -156,6 +157,7 @@ COPY --from=deps_dev --link --chown="${UID}:0" /app/package.json /app/pnpm-lock.
 RUN pnpm exec playwright install --with-deps
 
 # Copy source code
+RUN chown "${UID}:0" .
 COPY --link --chown="${UID}:0" ./app/ ./
 
 # Build application
@@ -183,6 +185,7 @@ COPY --from=deps_dev --link --chown="${UID}:0" /app/.astro/ ./.astro/
 COPY --from=deps_dev --link --chown="${UID}:0" /app/node_modules/ ./node_modules/
 
 # Copy source code
+RUN chown "${UID}:0" .
 COPY --link --chown="${UID}:0" ./app/ ./
 
 # Create user 'user' in group 'root'
