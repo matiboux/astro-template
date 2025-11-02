@@ -4,7 +4,6 @@ import type { DefaultLocaleKeys } from './types.d.ts'
 
 const locale = {
 	'Welcome!': '¡Bienvenido!',
-	'Page not found': 'Página no encontrada',
 } as const
 
 export default locale satisfies
