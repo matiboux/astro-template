@@ -12,7 +12,7 @@ ARG UID=1001
 # --
 # Upstream images
 
-FROM node:22-slim AS node_upstream
+FROM node:24-slim AS node_upstream
 FROM nginx:1.29-alpine AS nginx_upstream
 
 
