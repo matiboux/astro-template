@@ -17,7 +17,7 @@ FROM nginx:1.29-alpine AS nginx_upstream
 
 
 # --
-# Base image
+# Base stage
 
 FROM node_upstream AS node_base
 
@@ -29,7 +29,7 @@ ENV HOME=/tmp
 
 
 # --
-# Build binary base image
+# Build binary base stage
 
 FROM node_base AS node_build
 
@@ -39,7 +39,7 @@ RUN --mount=type=cache,id=npm,target=/root/.npm \
 
 
 # --
-# Build base image
+# Build base stage
 
 FROM node_build AS deps_base
 
@@ -48,7 +48,7 @@ COPY --link ./app/package.json ./app/pnpm-lock.yaml ./
 
 
 # --
-# Build dev image
+# Build dev stage
 
 FROM deps_base AS deps_dev
 
@@ -112,7 +112,7 @@ CMD [ "/bin/sh", "-c", "exit 0" ]
 
 
 # --
-# Test base image
+# Test base stage
 
 FROM node_build AS test_base
 
@@ -211,7 +211,7 @@ CMD [ "sh", "-c", "pnpm run dev --host --port \"${PORT}\"" ]
 
 
 # --
-# Prod build image
+# Prod build stage
 
 FROM node_build AS app_prod_build
 
@@ -271,8 +271,8 @@ COPY --from=app_prod_build --link /app/dist/ /usr/share/nginx/html
 # Set environment variables
 ARG NGINX_HOST='local'
 ENV NGINX_HOST=${NGINX_HOST}
-ARG PORT='8080'
-ENV NGINX_PORT=${PORT}
 
 # Set exposed port
+ARG PORT='8080'
+ENV NGINX_PORT=${PORT}
 EXPOSE ${PORT}
