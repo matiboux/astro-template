@@ -1,4 +1,6 @@
 ---
+import { getRelativeLocaleUrl } from 'astro:i18n'
+
 export interface Props
 {
 	lang?: string | undefined
@@ -11,22 +13,34 @@ const {
 
 <ul class="lang-list">
 	<li>
-		<a href="/" class:list={[ lang === 'en' && 'active' ]}>
+		<a
+			href={getRelativeLocaleUrl('en', Astro.url.pathname)}
+			class:list={[ lang === 'en' && 'active' ]}
+		>
 			<span class="icon icon-[twemoji--flag-united-kingdom] icon-align"></span>
 		</a>
 	</li>
 	<li>
-		<a href="/fr" class:list={[ lang === 'fr' && 'active' ]}>
+		<a
+			href={getRelativeLocaleUrl('fr', Astro.url.pathname)}
+			class:list={[ lang === 'fr' && 'active' ]}
+		>
 			<span class="icon icon-[twemoji--flag-france] icon-align"></span>
 		</a>
 	</li>
 	<li>
-		<a href="/de" class:list={[ lang === 'de' && 'active' ]}>
+		<a
+			href={getRelativeLocaleUrl('de', Astro.url.pathname)}
+			class:list={[ lang === 'de' && 'active' ]}
+		>
 			<span class="icon icon-[twemoji--flag-germany] icon-align"></span>
 		</a>
 	</li>
 	<li>
-		<a href="/es" class:list={[ lang === 'es' && 'active' ]}>
+		<a
+			href={getRelativeLocaleUrl('es', Astro.url.pathname)}
+			class:list={[ lang === 'es' && 'active' ]}
+		>
 			<span class="icon icon-[twemoji--flag-spain] icon-align"></span>
 		</a>
 	</li>
