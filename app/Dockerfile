@@ -79,15 +79,15 @@ RUN --mount=type=cache,sharing=locked,id=apt-cache,target=/var/cache/apt \
 # Create user 'user' in group 'root' & 'sudo'
 # (hadolint: Ignore unchecked pipe failures)
 # hadolint ignore=DL4006
-RUN USERNAME="$(getent passwd "${UID}" 2>/dev/null | cut -d: -f1)"; \
+RUN USERNAME="$(getent passwd "${UID}" 2>/dev/null | cut -d: -f1 || true)"; \
 	if [ -z "${USERNAME}" ]; then \
 		useradd -lm -u "${UID}" -U -G 0,sudo user; \
 	else \
 		usermod -a -G 0,sudo "${USERNAME}"; \
 	fi
 
-# Run as non-root user
-USER ${UID}:0
+# Run as created non-root user
+USER ${UID}
 
 # Mount source code
 VOLUME /app
@@ -188,15 +188,15 @@ COPY --link --chown="${UID}:0" ./app/ ./
 # Create user 'user' in group 'root'
 # (hadolint: Ignore unchecked pipe failures)
 # hadolint ignore=DL4006
-RUN USERNAME="$(getent passwd "${UID}" 2>/dev/null | cut -d: -f1)"; \
+RUN USERNAME="$(getent passwd "${UID}" 2>/dev/null | cut -d: -f1 || true)"; \
 	if [ -z "${USERNAME}" ]; then \
 		useradd -lm -u "${UID}" -U -G 0 user; \
 	else \
 		usermod -a -G 0 "${USERNAME}"; \
 	fi
 
-# Run as non-root user
-USER ${UID}:0
+# Run as created non-root user
+USER ${UID}
 
 # Set exposed port
 ARG PORT=8080
