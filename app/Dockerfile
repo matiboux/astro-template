@@ -13,7 +13,7 @@ ARG UID=1001
 # Upstream images
 
 FROM node:22-slim AS node_upstream
-FROM bitnamilegacy/nginx:1.29 AS nginx_upstream
+FROM nginx:1.29-alpine AS nginx_upstream
 
 
 # --
@@ -79,15 +79,15 @@ RUN --mount=type=cache,sharing=locked,id=apt-cache,target=/var/cache/apt \
 # Create user 'user' in group 'root' & 'sudo'
 # (hadolint: Ignore unchecked pipe failures)
 # hadolint ignore=DL4006
-RUN USERNAME="$(getent passwd "${UID}" 2>/dev/null | cut -d: -f1)"; \
+RUN USERNAME="$(getent passwd "${UID}" 2>/dev/null | cut -d: -f1 || true)"; \
 	if [ -z "${USERNAME}" ]; then \
 		useradd -lm -u "${UID}" -U -G 0,sudo user; \
 	else \
 		usermod -a -G 0,sudo "${USERNAME}"; \
 	fi
 
-# Run as non-root user
-USER ${UID}:0
+# Run as created non-root user
+USER ${UID}
 
 # Mount source code
 VOLUME /app
@@ -134,6 +134,7 @@ FROM test_base AS test_unit
 ARG UID
 
 # Copy source code
+RUN chown "${UID}:0" .
 COPY --link --chown="${UID}:0" ./app/ ./
 
 # Run as non-root user
@@ -156,6 +157,7 @@ COPY --from=deps_dev --link --chown="${UID}:0" /app/package.json /app/pnpm-lock.
 RUN pnpm exec playwright install --with-deps
 
 # Copy source code
+RUN chown "${UID}:0" .
 COPY --link --chown="${UID}:0" ./app/ ./
 
 # Build application
@@ -183,20 +185,21 @@ COPY --from=deps_dev --link --chown="${UID}:0" /app/.astro/ ./.astro/
 COPY --from=deps_dev --link --chown="${UID}:0" /app/node_modules/ ./node_modules/
 
 # Copy source code
+RUN chown "${UID}:0" .
 COPY --link --chown="${UID}:0" ./app/ ./
 
 # Create user 'user' in group 'root'
 # (hadolint: Ignore unchecked pipe failures)
 # hadolint ignore=DL4006
-RUN USERNAME="$(getent passwd "${UID}" 2>/dev/null | cut -d: -f1)"; \
+RUN USERNAME="$(getent passwd "${UID}" 2>/dev/null | cut -d: -f1 || true)"; \
 	if [ -z "${USERNAME}" ]; then \
 		useradd -lm -u "${UID}" -U -G 0 user; \
 	else \
 		usermod -a -G 0 "${USERNAME}"; \
 	fi
 
-# Run as non-root user
-USER ${UID}:0
+# Run as created non-root user
+USER ${UID}
 
 # Set exposed port
 ARG PORT=8080
@@ -259,10 +262,17 @@ FROM nginx_upstream AS app_prod
 # Set runtime environment
 ENV APP_ENV=prod
 
+# Copy nginx configuration
+COPY --link --chown="${UID}:0" ./nginx/default.conf.template /etc/nginx/templates/
+
 # Copy app production built files
-COPY --from=app_prod_build --link /app/dist/ ./
+COPY --from=app_prod_build --link /app/dist/ /usr/share/nginx/html
+
+# Set environment variables
+ARG NGINX_HOST='local'
+ENV NGINX_HOST=${NGINX_HOST}
+ARG PORT='8080'
+ENV NGINX_PORT=${PORT}
 
 # Set exposed port
-ARG PORT=8080
-ENV NGINX_HTTP_PORT_NUMBER=${PORT}
 EXPOSE ${PORT}
