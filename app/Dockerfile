@@ -24,14 +24,14 @@ FROM node_upstream AS node_base
 # Set app directory
 WORKDIR /app
 
-# Use temporary directory as home
+# Set home directory for cache
 ENV HOME=/tmp
 
 
 # --
-# Build binary base stage
+# Build base stage
 
-FROM node_base AS node_build
+FROM node_base AS node_build_base
 
 # Install pnpm
 RUN --mount=type=cache,id=npm,target=/root/.npm \
@@ -39,16 +39,16 @@ RUN --mount=type=cache,id=npm,target=/root/.npm \
 
 
 # --
-# Build base stage
+# Deps base stage
 
-FROM node_build AS deps_base
+FROM node_build_base AS deps_base
 
 # Copy build configuration
 COPY --link ./app/package.json ./app/pnpm-lock.yaml ./
 
 
 # --
-# Build dev stage
+# Deps dev stage
 
 FROM deps_base AS deps_dev
 
@@ -63,8 +63,9 @@ RUN mkdir -p ./.astro
 # --
 # CLI image
 
-FROM node_build AS app_cli
+FROM node_build_base AS app_cli
 
+# Build arguments
 ARG UID
 
 # Install sudo
@@ -101,21 +102,23 @@ CMD [ "--help" ]
 # --
 # Lint image
 
-FROM node_build AS app_lint
+FROM node_build_base AS app_lint
 
+# Build arguments
 ARG UID
 
 # Run as non-root user
 USER ${UID}:0
 
-CMD [ "/bin/sh", "-c", "exit 0" ]
+CMD [ "sh", "-c", "exit 0" ]
 
 
 # --
 # Test base stage
 
-FROM node_build AS test_base
+FROM node_build_base AS test_base
 
+# Build arguments
 ARG UID
 
 # Set runtime environment
@@ -123,6 +126,7 @@ ENV APP_ENV=test
 
 # Copy development dependencies
 ENV NODE_ENV=development
+COPY --from=deps_dev --link --chown="${UID}:0" /app/.astro/ ./.astro/
 COPY --from=deps_dev --link --chown="${UID}:0" /app/node_modules/ ./node_modules/
 
 
@@ -131,6 +135,7 @@ COPY --from=deps_dev --link --chown="${UID}:0" /app/node_modules/ ./node_modules
 
 FROM test_base AS test_unit
 
+# Build arguments
 ARG UID
 
 # Copy source code
@@ -172,8 +177,9 @@ CMD [ "sh", "-c", "pnpm run test:playwright --output /tmp/playwright/test-result
 # --
 # Dev image
 
-FROM node_build AS app_dev
+FROM node_build_base AS app_dev
 
+# Build arguments
 ARG UID
 
 # Set runtime environment
@@ -213,8 +219,9 @@ CMD [ "sh", "-c", "pnpm run dev --host --port \"${PORT}\"" ]
 # --
 # Prod build stage
 
-FROM node_build AS app_prod_build
+FROM node_build_base AS app_prod_build
 
+# Build arguments
 ARG UID
 
 # Set runtime environment
