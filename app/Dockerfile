@@ -67,7 +67,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 # --
 # CLI image
 
-FROM node_base AS app_cli
+FROM node_build_base AS app_cli
 
 # Build arguments
 ARG UID
@@ -130,9 +130,12 @@ CMD [ "sh", "-c", "exit 0" ]
 
 
 # --
-# Test image
+# Test base stage
 
-FROM node_base AS app_test
+FROM node_build_base AS test_base
+
+# Build arguments
+ARG UID
 
 # Set runtime environment
 ENV APP_ENV=test
