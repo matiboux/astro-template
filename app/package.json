@@ -41,5 +41,10 @@
     "@playwright/test": "^1.57.0",
     "@types/node": "^22.19.1",
     "vitest": "^3.2.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "volar-service-emmet@0.0.66": "0.0.67"
+    }
   }
 }
