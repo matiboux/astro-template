@@ -46,5 +46,9 @@
     "overrides": {
       "volar-service-emmet@0.0.66": "0.0.67"
     }
+  },
+  "imports": {
+    "#global.css": "./src/styles/global.css",
+    "#tailwind.css": "./src/styles/tailwind.css"
   }
 }
