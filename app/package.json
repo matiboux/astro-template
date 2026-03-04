@@ -15,7 +15,7 @@
     "astro:sync": "astro sync",
     "astro:preview": "astro preview",
     "test:vitest": "vitest run",
-    "test:playwright": "playwright test",
+    "test:playwright": "playwright test"
   },
   "repository": {
     "type": "git",
