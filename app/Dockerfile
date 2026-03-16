@@ -260,12 +260,16 @@ FROM test_base AS test_e2e
 # Build arguments
 ARG UID
 
+# Copy dev dependencies
+COPY --from=source_dev --link --chown="${UID}:0" /app/.astro/ ./.astro/
+COPY --from=source_dev --link --chown="${UID}:0" /app/node_modules/ ./node_modules/
+
 # Install Playwright dependencies
 ENV PLAYWRIGHT_BROWSERS_PATH=/etc/playwright/browsers
 COPY --from=deps_dev --link --chown="${UID}:0" /app/package.json /app/pnpm-lock.yaml ./
 RUN pnpm exec playwright install --with-deps
 
-# Copy dev dependencies & source code
+# Copy dev source code
 RUN chown "${UID}:0" .
 COPY --from=source_dev --link --chown="${UID}:0" /app/ ./
 
