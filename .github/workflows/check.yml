@@ -50,6 +50,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    # Only run if:
+    # - Checks are not disabled
+    if: |
+      vars.DISABLE_CHECKS != 'true'
+
     steps:
 
       # Dependency steps
@@ -116,6 +121,15 @@ jobs:
     name: Test Unit
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    # Only run if:
+    # - Checks are not disabled
+    # - Tests are not disabled
+    # - Unit tests are not disabled
+    if: |
+      vars.DISABLE_CHECKS != 'true' &&
+      vars.DISABLE_TESTS != 'true' &&
+      vars.DISABLE_TESTS_UNIT != 'true'
 
     steps:
 
@@ -233,6 +247,15 @@ jobs:
     name: Test E2E
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    # Only run if:
+    # - Checks are not disabled
+    # - Tests are not disabled
+    # - E2E tests are not disabled
+    if: |
+      vars.DISABLE_CHECKS != 'true' &&
+      vars.DISABLE_TESTS != 'true' &&
+      vars.DISABLE_TESTS_E2E != 'true'
 
     steps:
 
