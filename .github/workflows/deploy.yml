@@ -176,7 +176,8 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
 
-      - uses: actions/github-script@v8
+      - name: Delete GitHub Pages artifact
+        uses: actions/github-script@v8
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
           ARTIFACT_PATTERN: '^github-pages$'
