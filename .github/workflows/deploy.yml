@@ -48,7 +48,7 @@ jobs:
     # Only run if:
     # - Deploys are not disabled
     if: |
-      vars.DISABLE_DEPLOYS != 'true'
+      vars.CI_DISABLE_DEPLOYS != 'true'
 
     steps:
 
