@@ -159,6 +159,7 @@ jobs:
 
     # Set GITHUB_TOKEN permissions for the job
     permissions:
+      actions: write
       id-token: write
       pages: write
 
