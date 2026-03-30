@@ -57,10 +57,12 @@ jobs:
 
     steps:
 
-      # Execution steps
+      # Preparation steps
 
       - name: Checkout
         uses: actions/checkout@v6
+
+      # Execution steps
 
       - name: Pull dependencies
         run: |
@@ -131,10 +133,12 @@ jobs:
 
     steps:
 
-      # Execution steps
+      # Preparation steps
 
       - name: Checkout
         uses: actions/checkout@v6
+
+      # Execution steps
 
       - name: Pull images for unit tests
         run: |
@@ -255,10 +259,12 @@ jobs:
 
     steps:
 
-      # Execution steps
+      # Preparation steps
 
       - name: Checkout
         uses: actions/checkout@v6
+
+      # Execution steps
 
       - name: Pull images for e2e tests
         run: |
