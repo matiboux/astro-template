@@ -53,16 +53,14 @@ jobs:
     # Only run if:
     # - Checks are not disabled
     if: |
-      vars.DISABLE_CHECKS != 'true'
+      vars.CI_DISABLE_CHECKS != 'true'
 
     steps:
 
-      # Dependency steps
+      # Execution steps
 
       - name: Checkout
         uses: actions/checkout@v6
-
-      # Execution steps
 
       - name: Pull dependencies
         run: |
@@ -127,18 +125,16 @@ jobs:
     # - Tests are not disabled
     # - Unit tests are not disabled
     if: |
-      vars.DISABLE_CHECKS != 'true' &&
-      vars.DISABLE_TESTS != 'true' &&
-      vars.DISABLE_TESTS_UNIT != 'true'
+      vars.CI_DISABLE_CHECKS != 'true' &&
+      vars.CI_DISABLE_TESTS != 'true' &&
+      vars.CI_DISABLE_TESTS_UNIT != 'true'
 
     steps:
 
-      # Dependency steps
+      # Execution steps
 
       - name: Checkout
         uses: actions/checkout@v6
-
-      # Execution steps
 
       - name: Pull images for unit tests
         run: |
@@ -253,18 +249,16 @@ jobs:
     # - Tests are not disabled
     # - E2E tests are not disabled
     if: |
-      vars.DISABLE_CHECKS != 'true' &&
-      vars.DISABLE_TESTS != 'true' &&
-      vars.DISABLE_TESTS_E2E != 'true'
+      vars.CI_DISABLE_CHECKS != 'true' &&
+      vars.CI_DISABLE_TESTS != 'true' &&
+      vars.CI_DISABLE_TESTS_E2E != 'true'
 
     steps:
 
-      # Dependency steps
+      # Execution steps
 
       - name: Checkout
         uses: actions/checkout@v6
-
-      # Execution steps
 
       - name: Pull images for e2e tests
         run: |
