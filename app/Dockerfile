@@ -192,6 +192,9 @@ RUN if [ "${BUILD_CHECK}" = 'true' ]; then \
 
 FROM alpine_base AS source_prod
 
+# Copy prod dependencies
+COPY --from=deps_prod --link /app/node_modules/ ./node_modules/
+
 # Copy built prod application files
 COPY --from=source_prod_build --link /app/dist/ ./dist/
 
