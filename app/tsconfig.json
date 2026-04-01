@@ -1,11 +1,18 @@
 {
   "extends": "astro/tsconfigs/strictest",
+  "include": [
+    "${configDir}/.astro/types.d.ts",
+    "${configDir}/**/*"
+  ],
+  "exclude": [
+    "${configDir}/dist"
+  ],
   "compilerOptions": {
-    "target": "es2022",
-    "baseUrl": ".",
+    // "target": "es2022",
+    // "baseUrl": ".",
     "paths": {
-      "/*": [ "*" ],
-      "~/*": [ "src/*" ]
+      "//*": [ "./*" ],
+      "~/*": [ "./src/*" ]
     },
     "types": [
       "vitest/globals"
