@@ -17,6 +17,7 @@
     "types": [
       "vitest/globals"
     ],
+    "resolveJsonModule": true,
     "noUnusedLocals": false
   }
 }
