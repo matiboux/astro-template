@@ -1,23 +1,30 @@
 {
   "extends": "astro/tsconfigs/strictest",
-  "include": [
-    "${configDir}/.astro/types.d.ts",
-    "${configDir}/**/*"
-  ],
-  "exclude": [
-    "${configDir}/dist"
-  ],
   "compilerOptions": {
-    // "target": "es2022",
-    // "baseUrl": ".",
+    "rootDir": ".",
+
     "paths": {
       "//*": [ "./*" ],
       "~/*": [ "./src/*" ]
-    },
-    "types": [
-      "vitest/globals"
-    ],
+		},
+
+    "outDir": "./dist",
+
     "resolveJsonModule": true,
-    "noUnusedLocals": false
-  }
+    "noUnusedLocals": false,
+
+    "types": [
+      "node",
+      "vitest/globals"
+    ]
+  },
+  "include": [
+    "${configDir}/.astro/types.d.ts",
+    "${configDir}/src",
+    "${configDir}/*.ts",
+  ],
+  "exclude": [
+    "${configDir}/dist",
+    "${configDir}/node_modules",
+  ]
 }
