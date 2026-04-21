@@ -154,7 +154,8 @@ COPY --link ./ ./
 FROM node_build_base AS source_prod_build
 
 # Set runtime environment
-ENV APP_ENV=prod
+ARG APP_ENV=prod
+ENV APP_ENV=${APP_ENV}
 ENV NODE_ENV=production
 
 # Copy dev dependencies & source code
