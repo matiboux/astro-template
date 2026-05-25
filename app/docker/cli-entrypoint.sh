@@ -24,7 +24,7 @@ elif (
 
 # If the first argument is a flag,
 # Run pnpm with the provided arguments
-if (
+elif (
 	[ "${1#-}" != "$1" ]
 ); then
 	set -- pnpm "$@"
