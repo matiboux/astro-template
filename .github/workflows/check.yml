@@ -86,7 +86,7 @@ jobs:
           ASTRO_SITE_URL: ${{ vars.ASTRO_SITE_URL }}
           ASTRO_BASE_PATH: ${{ vars.ASTRO_BASE_PATH }}
           ASTRO_ASSETS_PREFIX: ${{ vars.ASTRO_ASSETS_PREFIX }}
-          # Application
+          # Application (app env vars)
           # (Add env vars for your application here.)
         run: |
           # docker compose build
@@ -160,7 +160,7 @@ jobs:
           ASTRO_SITE_URL: ${{ vars.ASTRO_SITE_URL }}
           ASTRO_BASE_PATH: ${{ vars.ASTRO_BASE_PATH }}
           ASTRO_ASSETS_PREFIX: ${{ vars.ASTRO_ASSETS_PREFIX }}
-          # Application
+          # Application (app env vars)
           # (Add env vars for your application here.)
         run: |
           # docker compose build
@@ -286,7 +286,7 @@ jobs:
           ASTRO_SITE_URL: ${{ vars.ASTRO_SITE_URL }}
           ASTRO_BASE_PATH: ${{ vars.ASTRO_BASE_PATH }}
           ASTRO_ASSETS_PREFIX: ${{ vars.ASTRO_ASSETS_PREFIX }}
-          # Application
+          # Application (app env vars)
           # (Add env vars for your application here.)
         run: |
           # docker compose build
