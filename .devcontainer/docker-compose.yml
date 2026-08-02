@@ -11,5 +11,5 @@ services:
     working_dir: /workdir
     command: sleep infinity
     volumes:
-      - .:/workdir:cached
+      - ..:/workdir:cached
       - /var/run/docker.sock:/var/run/docker.sock
