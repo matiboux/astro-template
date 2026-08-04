@@ -89,6 +89,9 @@ elif command -v docker >/dev/null 2>&1; then
 					docker create -i --entrypoint sh "${docker_image}" \
 						-c "mkdir -p /repo && tar -xf - -C /repo && gitleaks git /repo --no-banner ${container_args}"
 				)"
+				if [ -z "${container_id}" ]; then
+					return 2
+				fi
 				tar -cf - -C "${repo_dir}" . | docker start -ai "${container_id}"
 				local gitleaks_rc=$?
 				local gitleaks_baseline="$(mktemp)"
@@ -132,8 +135,8 @@ gitleaks_rc=$?
 
 echo ''
 if [ "${mode}" = 'update-baseline' ]; then
-	if [ ! -f "${repo_dir}/${baseline_path}" ]; then
-		echo '❌ Baseline generation failed: no report file was produced'
+	if [ "${gitleaks_rc}" -ge 2 ] || [ ! -f "${repo_dir}/${baseline_path}" ]; then
+		echo '❌ Baseline generation failed'
 		exit 1
 	fi
 	echo "✅ Baseline written to ${baseline_path}"
