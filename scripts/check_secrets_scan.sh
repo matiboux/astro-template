@@ -114,7 +114,7 @@ elif command -v docker >/dev/null 2>&1; then
 		fi
 	fi
 else
-	echo '⚠️  Skipped scan: Gitleaks and Docker not found on PATH' >&2
+	echo '⚠️  Skipped scan: Neither Gitleaks nor Docker found on PATH' >&2
 	exit 0
 fi
 
