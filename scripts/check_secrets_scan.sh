@@ -2,11 +2,10 @@
 # Scan for committed secrets across the full git history, using gitleaks
 # (https://github.com/gitleaks/gitleaks).
 #
-# Usage: check_secrets_scan.sh        (from the repo root)
+# Usage: check_secrets_scan.sh [-u|--update-baseline]
 #
 # If found in PATH, the `gitleaks` binary is used directly. Otherwise, a docker
-# fallback is used (zricethezav/gitleaks image), with a bind mount if possible,
-# or streaming a tar of `.git` over stdin otherwise.
+# fallback is used (zricethezav/gitleaks image).
 #
 # SECRETS_SCAN_BASELINE_PATH sets the path to an optional gitleaks baseline
 # file (relative to the repo root). The baseline can capture known false
@@ -16,18 +15,28 @@
 #
 # SECRETS_SCAN_GITLEAKS_IMAGE_TAG sets the tag of the zricethezav/gitleaks
 # image used by the docker fallback. Default is 'latest'.
+#
+# Option -u, --update-baseline (re)generates the baseline file from the
+# findings currently present in the repo, instead of scanning against it. ALWAYS
+# review the diff before committing it: this accepts silently everything
+# present at run time, including any real secret lying around.
 set -u
+
+mode='scan'
 
 for arg in "$@"; do
 	case "${arg}" in
 		-h|--help)
-			echo "Usage: ${0##*/}" >&2
+			echo "Usage: ${0##*/} [-u|--update-baseline]" >&2
 			exit 0
+			;;
+		-u|--update-baseline)
+			mode='update-baseline'
 			;;
 		--)
 			;;
 		*)
-			echo "Usage: ${0##*/}" >&2
+			echo "Usage: ${0##*/} [-u|--update-baseline]" >&2
 			exit 1
 			;;
 	esac
@@ -45,73 +54,92 @@ has_baseline='false'
 gitleaks_image_tag="${SECRETS_SCAN_GITLEAKS_IMAGE_TAG:-}"
 [ -z "${gitleaks_image_tag}" ] && gitleaks_image_tag='latest'
 
+# Gitleaks arguments
+if [ "${mode}" = 'update-baseline' ]; then
+	host_args="--report-format json --report-path ${repo_dir}/${baseline_path}"
+	container_args="--report-format json --report-path /repo/${baseline_path}"
+elif [ "${has_baseline}" = 'true' ]; then
+	host_args="--baseline-path ${repo_dir}/${baseline_path}"
+	container_args="--baseline-path /repo/${baseline_path}"
+else
+	host_args=''
+	container_args=''
+fi
+
 if command -v gitleaks >/dev/null 2>&1; then
-	if [ "${has_baseline}" = 'true' ]; then
-		run_gitleaks() {
-			gitleaks git --no-banner --baseline-path "${repo_dir}/${baseline_path}"
-		}
-	else
-		run_gitleaks() {
-			gitleaks git --no-banner
-		}
-	fi
+	run_gitleaks() {
+		gitleaks git "${repo_dir}" --no-banner ${host_args}
+	}
 elif command -v docker >/dev/null 2>&1; then
 	docker_image="zricethezav/gitleaks:${gitleaks_image_tag}"
 	if docker run --rm -v "${repo_dir}:/probe" --entrypoint sh "${docker_image}" -c 'test -d /probe/.git' >/dev/null 2>&1; then
-		if [ "${has_baseline}" = 'true' ]; then
+		run_gitleaks() {
+			docker run --rm \
+				-e GIT_DISCOVERY_ACROSS_FILESYSTEM=1 \
+				-v "${repo_dir}:/repo" \
+				"${docker_image}" \
+				git /repo --no-banner ${container_args}
+		}
+	else
+		# Bind mount is not available, so we stream an archive of the repo
+		# directory to the container and use it for the scan.
+		if [ "${mode}" = 'update-baseline' ]; then
 			run_gitleaks() {
-				docker run --rm \
-					-e GIT_DISCOVERY_ACROSS_FILESYSTEM=1 \
-					-v "${repo_dir}:/repo" \
+				local gitleaks_baseline="$(mktemp)"
+				tar -cf - -C "${repo_dir}" . \
+				| docker run --rm -i \
+					--entrypoint sh \
 					"${docker_image}" \
-					git /repo --no-banner --baseline-path "/repo/${baseline_path}"
+					-c "mkdir -p /repo && tar -xf - -C /repo && gitleaks git /repo --no-banner ${container_args} >&2; cat /repo/${baseline_path}" \
+					> "${gitleaks_baseline}"
+				local gitleaks_rc=$?
+				if [ "${gitleaks_rc}" -eq 0 ] && [ -s "${gitleaks_baseline}" ]; then
+					mv "${gitleaks_baseline}" "${repo_dir}/${baseline_path}"
+				else
+					rm -f "${gitleaks_baseline}"
+				fi
+				return "${gitleaks_rc}"
 			}
 		else
 			run_gitleaks() {
-				docker run --rm \
-					-e GIT_DISCOVERY_ACROSS_FILESYSTEM=1 \
-					-v "${repo_dir}:/repo" \
+				tar -cf - -C "${repo_dir}" . \
+				| docker run --rm -i \
+					--entrypoint sh \
 					"${docker_image}" \
-					git /repo --no-banner
+					-c "mkdir -p /repo && tar -xf - -C /repo && gitleaks git /repo --no-banner ${container_args}"
 			}
 		fi
-	elif [ "${has_baseline}" = 'true' ]; then
-		run_gitleaks() {
-			tar -cf - .git "${baseline_path}" \
-			| docker run --rm -i \
-				--entrypoint sh \
-				"${docker_image}" \
-				-c "mkdir -p /repo && tar -xf - -C /repo && gitleaks git /repo --no-banner --baseline-path /repo/${baseline_path}"
-		}
-	else
-		run_gitleaks() {
-			tar -cf - .git \
-			| docker run --rm -i \
-				--entrypoint sh \
-				"${docker_image}" \
-				-c 'mkdir -p /repo && tar -xf - -C /repo && gitleaks git /repo --no-banner'
-		}
 	fi
 else
-	echo "⚠️  Skipping secrets scan: neither gitleaks nor docker found on PATH (https://github.com/gitleaks/gitleaks#installing)" >&2
+	echo '⚠️  Skipped scan: Gitleaks and Docker not found on PATH' >&2
 	exit 0
 fi
 
-echo 'Scanning for secrets in git repo history...'
-
 echo ''
-if [ "${has_baseline}" = 'true' ]; then
-	echo "📋 Running gitleaks (baseline: ${baseline_path})..."
+if [ "${mode}" = 'update-baseline' ]; then
+	echo "📋 Regenerating gitleaks baseline at ${baseline_path}..."
 else
-	echo '📋 Running gitleaks (no baseline found)...'
+	if [ "${has_baseline}" = 'true' ]; then
+		echo "📋 Running gitleaks (baseline: ${baseline_path})..."
+	else
+		echo '📋 Running gitleaks (no baseline found)...'
+	fi
 fi
 run_gitleaks
-rc=$?
+gitleaks_rc=$?
 
 echo ''
-if [ "${rc}" -ne 0 ]; then
+if [ "${mode}" = 'update-baseline' ]; then
+	if [ ! -f "${repo_dir}/${baseline_path}" ]; then
+		echo '❌ Baseline generation failed: no report file was produced'
+		exit 1
+	fi
+	echo "✅ Baseline written to ${baseline_path} — review the diff before committing it"
+	exit 0
+fi
+	if [ "${gitleaks_rc}" -ne 0 ]; then
 	echo '❌ New secrets found in git repo history'
 else
 	echo '✅ No new secrets found in git repo history'
 fi
-exit "${rc}"
+	exit "${gitleaks_rc}"
