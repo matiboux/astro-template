@@ -85,19 +85,19 @@ elif command -v docker >/dev/null 2>&1; then
 		# directory to the container and use it for the scan.
 		if [ "${mode}" = 'update-baseline' ]; then
 			run_gitleaks() {
-				local gitleaks_baseline="$(mktemp)"
-				tar -cf - -C "${repo_dir}" . \
-				| docker run --rm -i \
-					--entrypoint sh \
-					"${docker_image}" \
-					-c "mkdir -p /repo && tar -xf - -C /repo && gitleaks git /repo --no-banner ${container_args} >&2; cat /repo/${baseline_path}" \
-					> "${gitleaks_baseline}"
+				local container_id="$(
+					docker create -i --entrypoint sh "${docker_image}" \
+						-c "mkdir -p /repo && tar -xf - -C /repo && gitleaks git /repo --no-banner ${container_args}"
+				)"
+				tar -cf - -C "${repo_dir}" . | docker start -ai "${container_id}"
 				local gitleaks_rc=$?
-				if [ "${gitleaks_rc}" -eq 0 ] && [ -s "${gitleaks_baseline}" ]; then
+				local gitleaks_baseline="$(mktemp)"
+				if docker cp "${container_id}:/repo/${baseline_path}" "${gitleaks_baseline}" > /dev/null 2>&1; then
 					mv "${gitleaks_baseline}" "${repo_dir}/${baseline_path}"
 				else
 					rm -f "${gitleaks_baseline}"
 				fi
+				docker rm "${container_id}" > /dev/null 2>&1
 				return "${gitleaks_rc}"
 			}
 		else
@@ -114,6 +114,8 @@ else
 	echo '⚠️  Skipped scan: Gitleaks and Docker not found on PATH' >&2
 	exit 0
 fi
+
+echo 'Scanning for committed secrets in git repo history...'
 
 echo ''
 if [ "${mode}" = 'update-baseline' ]; then
@@ -134,12 +136,12 @@ if [ "${mode}" = 'update-baseline' ]; then
 		echo '❌ Baseline generation failed: no report file was produced'
 		exit 1
 	fi
-	echo "✅ Baseline written to ${baseline_path} — review the diff before committing it"
+	echo "✅ Baseline written to ${baseline_path}"
 	exit 0
 fi
-	if [ "${gitleaks_rc}" -ne 0 ]; then
+if [ "${gitleaks_rc}" -ne 0 ]; then
 	echo '❌ New secrets found in git repo history'
 else
 	echo '✅ No new secrets found in git repo history'
 fi
-	exit "${gitleaks_rc}"
+exit "${gitleaks_rc}"
