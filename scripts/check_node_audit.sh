@@ -20,43 +20,42 @@
 # Projects with vulnerabilities above the threshold will fail with exit code 1.
 set -u
 
-default_dirs='app'
-
 dirs=''
 
+usage() {
+	echo "Usage: ${0##*/} [dir...]"
+}
+
 after_dashdash='false'
-for arg in "$@"; do
+while [ "$#" -gt 0 ]; do
+	arg="$1"
 	if [ "${after_dashdash}" = 'true' ]; then
 		dirs="$(printf '%s\n%s' "${dirs}" "${arg}")"
+		shift
 		continue
 	fi
 	case "${arg}" in
 		-h|--help)
-			echo "Usage: ${0##*/} [dir...]" >&2
+			usage
 			exit 0
 			;;
 		--)
 			after_dashdash='true'
 			;;
 		-*)
-			echo "Usage: ${0##*/} [dir...]" >&2
+			usage >&2
 			exit 1
 			;;
 		*)
 			dirs="$(printf '%s\n%s' "${dirs}" "${arg}")"
 			;;
 	esac
+	shift
 done
 
-if [ -z "$dirs" ]; then
-	dirs="${NODE_AUDIT_DIRS:-}"
-fi
-if [ -z "$dirs" ]; then
-	dirs="${NODE_AUDIT_DEFAULT_DIRS:-}"
-fi
-if [ -z "$dirs" ]; then
-	dirs="${default_dirs}"
-fi
+[ -z "$dirs" ] && dirs="${NODE_AUDIT_DIRS:-}"
+[ -z "$dirs" ] && dirs="${NODE_AUDIT_DEFAULT_DIRS:-}"
+[ -z "$dirs" ] && dirs='app'
 if [ -z "$dirs" ]; then
 	echo "No directories to audit" >&2
 	exit 0

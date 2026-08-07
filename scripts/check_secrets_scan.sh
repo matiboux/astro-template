@@ -24,10 +24,15 @@ set -u
 
 mode='scan'
 
-for arg in "$@"; do
+usage() {
+	echo "Usage: ${0##*/} [-u|--update-baseline]"
+}
+
+while [ "$#" -gt 0 ]; do
+	arg="$1"
 	case "${arg}" in
 		-h|--help)
-			echo "Usage: ${0##*/} [-u|--update-baseline]" >&2
+			usage
 			exit 0
 			;;
 		-u|--update-baseline)
@@ -36,10 +41,11 @@ for arg in "$@"; do
 		--)
 			;;
 		*)
-			echo "Usage: ${0##*/} [-u|--update-baseline]" >&2
+			usage >&2
 			exit 1
 			;;
 	esac
+	shift
 done
 
 current_dir="${0%/*}"
@@ -89,18 +95,19 @@ elif command -v docker >/dev/null 2>&1; then
 					docker create -i --entrypoint sh "${docker_image}" \
 						-c "mkdir -p /repo && tar -xf - -C /repo && gitleaks git /repo --no-banner ${container_args}"
 				)"
-				if [ -z "${container_id}" ]; then
-					return 2
-				fi
+				[ -z "${container_id}" ] && return 2
 				tar -cf - -C "${repo_dir}" . | docker start -ai "${container_id}"
 				local gitleaks_rc=$?
 				local gitleaks_baseline="$(mktemp)"
-				if docker cp "${container_id}:/repo/${baseline_path}" "${gitleaks_baseline}" > /dev/null 2>&1; then
-					mv "${gitleaks_baseline}" "${repo_dir}/${baseline_path}"
+				[ "${gitleaks_rc}" -ge 2 ] && return "${gitleaks_rc}"
+				docker cp "${container_id}:/repo/${baseline_path}" "${gitleaks_baseline}" > /dev/null 2>&1
+				if [ $? -eq 0 ]; then
+					mv "${gitleaks_baseline}" "${repo_dir}/${baseline_path}" > /dev/null 2>&1
 				else
-					rm -f "${gitleaks_baseline}"
+					rm -f "${gitleaks_baseline}" > /dev/null 2>&1
+					gitleaks_rc=2
 				fi
-				docker rm "${container_id}" > /dev/null 2>&1
+				docker rm -f "${container_id}" > /dev/null 2>&1
 				return "${gitleaks_rc}"
 			}
 		else
@@ -114,7 +121,7 @@ elif command -v docker >/dev/null 2>&1; then
 		fi
 	fi
 else
-	echo '⚠️  Skipped scan: Gitleaks and Docker not found on PATH' >&2
+	echo '⚠️  Skipped scan: Neither Gitleaks nor Docker found on PATH' >&2
 	exit 0
 fi
 

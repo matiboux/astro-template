@@ -1,15 +1,16 @@
-.PHONY: help lint test test-unit test-e2e audit secrets ci
+.PHONY: help install update check lint-docker test-unit test-e2e audit secrets ci
 
 help:
 	@printf '%s\n' \
-		'install	Install dependencies' \
-		'lint       Run Astro and TypeScript checks' \
-		'test       Run unit and browser tests' \
-		'test-unit  Run unit tests only' \
-		'test-e2e   Build the app and run browser tests' \
-		'audit      Audit Node dependencies' \
-		'secrets    Scan git history for secrets' \
-		'ci         Run lint, tests, dependency audit, and secret scan'
+		'install	 Install dependencies' \
+		'update      Update dependencies' \
+		'check       Run Astro and TypeScript checks' \
+		'lint-docker Lint Dockerfiles' \
+		'test-unit   Run unit tests' \
+		'test-e2e    Build app and run browser tests' \
+		'audit       Audit Node dependencies' \
+		'secrets     Scan git history for secrets' \
+		'ci          Run lint, tests, audit, and secrets scan'
 
 install:
 	@cd app && pnpm ci
@@ -19,6 +20,9 @@ update:
 
 check:
 	@cd app && pnpm run check
+
+lint-docker:
+	@sh scripts/check_docker_lint.sh
 
 test-unit:
 	@cd app && pnpm run test:vitest
@@ -32,4 +36,4 @@ audit:
 secrets:
 	@sh scripts/check_secrets_scan.sh
 
-ci: lint test audit secrets
+ci: check lint-docker test-unit test-e2e audit secrets
