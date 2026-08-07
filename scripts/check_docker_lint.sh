@@ -21,47 +21,57 @@
 # DOCKER_LINT_HADOLINT_IMAGE_TAG sets the tag of the hadolint/hadolint image
 # used by the docker fallback. Default is 'latest'.
 #
-# DOCKER_LINT_LEVEL sets the minimum severity threshold that fails the lint
-# (style, info, warning, error, ignore). Default is 'info'.
+# The lint level can also be set via the -l/--level option (takes precedence
+# over DOCKER_LINT_LEVEL). DOCKER_LINT_LEVEL sets the minimum severity
+# threshold that fails the lint (style, info, warning, error, ignore).
+# Default is 'info'.
 set -u
 
-default_files='app/Dockerfile'
-
 files=''
+lint_level=''
+
+usage() {
+	echo "Usage: ${0##*/} [-l|--level <level>] [dockerfile...]" >&2
+}
 
 after_dashdash='false'
-for arg in "$@"; do
+while [ "$#" -gt 0 ]; do
+	arg="$1"
 	if [ "${after_dashdash}" = 'true' ]; then
 		files="$(printf '%s\n%s' "${files}" "${arg}")"
+		shift
 		continue
 	fi
 	case "${arg}" in
 		-h|--help)
-			echo "Usage: ${0##*/} [dockerfile...]" >&2
+			usage
 			exit 0
+			;;
+		-l|--level)
+			[ "$#" -lt 2 ] && { usage; exit 1; }
+			lint_level="$2"
+			shift
+			;;
+		--level=*)
+			lint_level="${arg#--level=}"
 			;;
 		--)
 			after_dashdash='true'
 			;;
 		-*)
-			echo "Usage: ${0##*/} [dockerfile...]" >&2
+			usage
 			exit 1
 			;;
 		*)
 			files="$(printf '%s\n%s' "${files}" "${arg}")"
 			;;
 	esac
+	shift
 done
 
-if [ -z "${files}" ]; then
-	files="${DOCKER_LINT_FILES:-}"
-fi
-if [ -z "${files}" ]; then
-	files="${DOCKER_LINT_DEFAULT_FILES:-}"
-fi
-if [ -z "${files}" ]; then
-	files="${default_files}"
-fi
+[ -z "${files}" ] && files="${DOCKER_LINT_FILES:-}"
+[ -z "${files}" ] && files="${DOCKER_LINT_DEFAULT_FILES:-}"
+[ -z "${files}" ] && files='app/Dockerfile'
 if [ -z "${files}" ]; then
 	echo 'No Dockerfiles to lint' >&2
 	exit 0
@@ -79,7 +89,7 @@ has_config='false'
 hadolint_image_tag="${DOCKER_LINT_HADOLINT_IMAGE_TAG:-}"
 [ -z "${hadolint_image_tag}" ] && hadolint_image_tag='latest'
 
-lint_level="${DOCKER_LINT_LEVEL:-}"
+[ -z "${lint_level}" ] && lint_level="${DOCKER_LINT_LEVEL:-}"
 [ -z "${lint_level}" ] && lint_level='info'
 case "${lint_level}" in
 	style|info|warning|error|ignore) ;;
