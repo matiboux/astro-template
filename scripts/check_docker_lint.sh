@@ -155,10 +155,19 @@ if [ "${nb_files}" -eq 0 ]; then
 	echo 'ℹ️  No Dockerfiles to lint (DOCKER_LINT_FILES is empty)'
 	exit 0
 fi
-if [ "${nb_files}" -eq 1 ]; then
-	echo "Linting 1 Dockerfile (level '${lint_level}')..."
+
+if [ "${has_config}" = 'true' ]; then
+	if [ "${nb_files}" -eq 1 ]; then
+		echo "Linting 1 Dockerfile (level '${lint_level}') (config: ${config_path})..."
+	else
+		echo "Linting ${nb_files} Dockerfiles (level '${lint_level}') (config: ${config_path})..."
+	fi
 else
-	echo "Linting ${nb_files} Dockerfiles (level '${lint_level}')..."
+	if [ "${nb_files}" -eq 1 ]; then
+		echo "Linting 1 Dockerfile (level '${lint_level}') (default config)..."
+	else
+		echo "Linting ${nb_files} Dockerfiles (level '${lint_level}') (default config)..."
+	fi
 fi
 
 linted=0
@@ -172,11 +181,7 @@ lint_file() {
 		echo "ℹ️  Skipping ${file}: File not found"
 		return 0
 	fi
-	if [ "${has_config}" = 'true' ]; then
-		echo "📋 Running hadolint for ${file} (config: ${config_path})..."
-	else
-		echo "📋 Running hadolint for ${file} (no config found)..."
-	fi
+	echo "📋 Running hadolint for ${file}..."
 	linted=$((linted + 1))
 	run_hadolint "${repo_dir}/${file}"
 	if [ "$?" -ne 0 ]; then
