@@ -20,6 +20,9 @@
 #
 # DOCKER_LINT_HADOLINT_IMAGE_TAG sets the tag of the hadolint/hadolint image
 # used by the docker fallback. Default is 'latest'.
+#
+# DOCKER_LINT_LEVEL sets the minimum severity threshold that fails the lint
+# (style, info, warning, error, ignore). Default is 'info'.
 set -u
 
 default_files='app/Dockerfile'
@@ -76,30 +79,72 @@ has_config='false'
 hadolint_image_tag="${DOCKER_LINT_HADOLINT_IMAGE_TAG:-}"
 [ -z "${hadolint_image_tag}" ] && hadolint_image_tag='latest'
 
-if command -v hadolint >/dev/null 2>&1; then
-	run_hadolint() {
-		local file="$1"
-		if [ "${has_config}" = 'true' ]; then
-			hadolint --config "${repo_dir}/${config_path}" "${file}"
-		else
-			hadolint "${file}"
-		fi
-	}
-elif command -v docker >/dev/null 2>&1; then
+lint_level="${DOCKER_LINT_LEVEL:-}"
+[ -z "${lint_level}" ] && lint_level='info'
+case "${lint_level}" in
+	style|info|warning|error|ignore) ;;
+	*)
+		echo "Invalid DOCKER_LINT_LEVEL '${lint_level}' (expected style|info|warning|error|ignore)" >&2
+		exit 1
+		;;
+esac
+
+if command -v hadolint > /dev/null 2>&1; then
+	if [ "${has_config}" = 'true' ]; then
+		run_hadolint() {
+			local file="$1"
+			hadolint --config "${repo_dir}/${config_path}" --failure-threshold "${lint_level}" "${file}"
+		}
+	else
+		run_hadolint() {
+			local file="$1"
+			hadolint --failure-threshold "${lint_level}" "${file}"
+		}
+	fi
+elif command -v docker > /dev/null 2>&1; then
 	docker_image="hadolint/hadolint:${hadolint_image_tag}"
-	run_hadolint() {
-		local file="$1"
-		if [ "${has_config}" = 'true' ]; then
-			docker run --rm -i \
-				-v "${repo_dir}/${config_path}:/.hadolint.yaml:ro" \
-				"${docker_image}" \
-				hadolint --config /.hadolint.yaml - < "${file}"
+	if [ "${has_config}" = 'true' ]; then
+		docker run --rm \
+			-v "${repo_dir}:/probe" \
+			--entrypoint sh \
+			"${docker_image}" \
+			-c 'test -n "$(ls -A /probe)"' \
+			> /dev/null 2>&1
+		if [ "$?" -eq 0 ]; then
+			run_hadolint() {
+				local file="$1"
+				docker run --rm -i \
+					-v "${repo_dir}/${config_path}:/.hadolint.yaml:ro" \
+					"${docker_image}" \
+					hadolint --config /.hadolint.yaml --failure-threshold "${lint_level}" - \
+					< "${file}"
+			}
 		else
+			# Bind mount is not available, so we copy the config file into the container.
+			run_hadolint() {
+				local file="$1"
+				local container_id="$(
+					docker create -i --entrypoint sh "${docker_image}" \
+						-c "hadolint --config /.hadolint.yaml --failure-threshold '${lint_level}' -"
+				)"
+				[ -z "${container_id}" ] && return 2
+				docker cp "${repo_dir}/${config_path}" "${container_id}":/.hadolint.yaml > /dev/null 2>&1
+				[ "$?" -ne 0 ] && return 2
+				docker start -ai "${container_id}" < "${file}"
+				local hadolint_rc="$?"
+				docker rm -f "${container_id}" > /dev/null 2>&1
+				return "${hadolint_rc}"
+			}
+		fi
+	else
+		run_hadolint() {
+			local file="$1"
 			docker run --rm -i \
 				"${docker_image}" \
-				hadolint - < "${file}"
-		fi
-	}
+				hadolint --failure-threshold "${lint_level}" - \
+				< "${file}"
+		}
+	fi
 else
 	echo '⚠️  Skipped lint: Neither Hadolint nor Docker found on PATH' >&2
 	exit 0
@@ -111,9 +156,9 @@ if [ "${nb_files}" -eq 0 ]; then
 	exit 0
 fi
 if [ "${nb_files}" -eq 1 ]; then
-	echo "Linting 1 Dockerfile..."
+	echo "Linting 1 Dockerfile (level '${lint_level}')..."
 else
-	echo "Linting ${nb_files} Dockerfiles..."
+	echo "Linting ${nb_files} Dockerfiles (level '${lint_level}')..."
 fi
 
 linted=0
@@ -148,7 +193,7 @@ EOF
 echo ''
 if [ -n "${failed_lints}" ]; then
 	nb_failed_lints="$(printf '%s\n' "${failed_lints}" | grep -c .)"
-	echo "❌ ${nb_failed_lints} Dockerfile(s) with lint issues:"
+	echo "❌ ${nb_failed_lints} Dockerfile(s) with lint issues (level '${lint_level}'):"
 	printf '%s\n' "${failed_lints}" | while IFS= read -r file; do
 		[ -z "${file}" ] && continue
 		echo "  - ${file}"
@@ -159,4 +204,4 @@ if [ "${linted}" -eq 0 ]; then
 	echo 'ℹ️  No Dockerfiles linted'
 	exit 0
 fi
-echo "✅ Docker lint passed on ${linted} Dockerfile(s)"
+echo "✅ Docker lint passed on ${linted} Dockerfile(s) (level '${lint_level}')"
