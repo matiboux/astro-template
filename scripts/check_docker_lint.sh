@@ -31,7 +31,7 @@ files=''
 lint_level=''
 
 usage() {
-	echo "Usage: ${0##*/} [-l|--level <level>] [dockerfile...]" >&2
+	echo "Usage: ${0##*/} [-l|--level <level>] [dockerfile...]"
 }
 
 after_dashdash='false'
@@ -59,7 +59,7 @@ while [ "$#" -gt 0 ]; do
 			after_dashdash='true'
 			;;
 		-*)
-			usage
+			usage >&2
 			exit 1
 			;;
 		*)

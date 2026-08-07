@@ -24,10 +24,15 @@ set -u
 
 mode='scan'
 
-for arg in "$@"; do
+usage() {
+	echo "Usage: ${0##*/} [-u|--update-baseline]"
+}
+
+while [ "$#" -gt 0 ]; do
+	arg="$1"
 	case "${arg}" in
 		-h|--help)
-			echo "Usage: ${0##*/} [-u|--update-baseline]" >&2
+			usage
 			exit 0
 			;;
 		-u|--update-baseline)
@@ -36,10 +41,11 @@ for arg in "$@"; do
 		--)
 			;;
 		*)
-			echo "Usage: ${0##*/} [-u|--update-baseline]" >&2
+			usage >&2
 			exit 1
 			;;
 	esac
+	shift
 done
 
 current_dir="${0%/*}"
