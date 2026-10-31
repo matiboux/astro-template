@@ -370,6 +370,40 @@ jobs:
           fi
           echo '::endgroup::'
 
+  # Lint Node job
+  lint-node:
+    name: Lint Node
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Only run if:
+    # - Checks are not disabled
+    # - Lint checks are not disabled
+    # - Node lint is not disabled
+    if: |
+      vars.CI_DISABLE_CHECKS != 'true' &&
+      vars.CI_DISABLE_LINT != 'true' &&
+      vars.CI_DISABLE_LINT_NODE != 'true'
+
+    steps:
+
+      # Initialization steps
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        run: npm install -g pnpm@12
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: app
+
+      # Execution steps
+
+      - name: Lint Node projects
+        run: sh scripts/check_node_lint.sh
+
   # Lint Docker job
   lint-docker:
     name: Lint Docker
