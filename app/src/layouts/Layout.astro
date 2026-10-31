@@ -7,6 +7,7 @@ export interface Props extends BaseProps {}
 
 const baseProps: BaseProps = {
 	...site,
+	lang: Astro.currentLocale ?? site.lang,
 	...Astro.props,
 	title: Astro.props.title
 		? (site.title ? `${Astro.props.title} – ${site.title}` : Astro.props.title)
