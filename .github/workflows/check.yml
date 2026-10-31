@@ -5,6 +5,16 @@ name: Check CI
 # - ASTRO_SITE_URL
 # - ASTRO_BASE_PATH
 # - ASTRO_ASSETS_PREFIX
+# - CI_DISABLE_CHECKS (disable all checks)
+# - CI_DISABLE_TESTS (disable all tests)
+# - CI_DISABLE_TESTS_UNIT
+# - CI_DISABLE_TESTS_E2E
+# - CI_DISABLE_LINT (disable all lint checks)
+# - CI_DISABLE_LINT_NODE
+# - CI_DISABLE_LINT_DOCKER
+# - CI_DISABLE_SECURITY (disable all security checks)
+# - CI_DISABLE_SECURITY_AUDIT
+# - CI_DISABLE_SECURITY_SECRETS
 
 # GitHub secrets: N/A
 
