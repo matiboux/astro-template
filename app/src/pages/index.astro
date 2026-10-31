@@ -1,17 +1,11 @@
 ---
 import Layout from '~/layouts/Layout.astro'
 import LocalesPicker from '~/components/LocalesPicker/LocalesPicker.astro'
-import { GITHUB_REPOSITORY_URL } from 'astro:env/client'
 
 import { i18nFactory } from '~/i18n'
 const _ = i18nFactory(Astro.currentLocale as any)
 
-import { site } from '~/site'
-
-const githubRepositoryUrl = (
-	GITHUB_REPOSITORY_URL ||
-	'https://github.com/matiboux/astro-template'
-)
+import { site, githubRepositoryUrl } from '~/site'
 ---
 
 <Layout>
