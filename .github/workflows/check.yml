@@ -26,6 +26,8 @@ on:
       - 'docker-compose.cicd.yml'
       - 'docker-compose.test-unit.yml'
       - 'docker-compose.test-e2e.yml'
+      - 'scripts/**'
+      - '.gitleaks-baseline.json'
       - '.env'
       # Application files
       - 'app/**'
@@ -367,3 +369,78 @@ jobs:
             exit 1
           fi
           echo '::endgroup::'
+
+  # Lint Docker job
+  lint-docker:
+    name: Lint Docker
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Only run if:
+    # - Checks are not disabled
+    if: |
+      vars.CI_DISABLE_CHECKS != 'true'
+
+    steps:
+
+      # Initialization steps
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # Execution steps
+
+      - name: Lint Dockerfiles
+        run: sh scripts/check_docker_lint.sh
+
+  # Audit job
+  audit:
+    name: Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Only run if:
+    # - Checks are not disabled
+    if: |
+      vars.CI_DISABLE_CHECKS != 'true'
+
+    steps:
+
+      # Initialization steps
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        run: npm install -g pnpm@12
+
+      # Execution steps
+
+      - name: Audit Node dependencies
+        run: sh scripts/check_node_audit.sh
+
+  # Secrets scan job
+  secrets:
+    name: Secrets Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Only run if:
+    # - Checks are not disabled
+    if: |
+      vars.CI_DISABLE_CHECKS != 'true'
+
+    steps:
+
+      # Initialization steps
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          # Full history is needed to scan past commits
+          fetch-depth: 0
+
+      # Execution steps
+
+      - name: Scan git history for secrets
+        run: sh scripts/check_secrets_scan.sh
