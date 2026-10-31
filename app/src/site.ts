@@ -28,6 +28,8 @@ export const site: Site = {
 	description: {
 		'en': 'Template project for an Astro web application',
 		'fr': 'Modèle de projet pour une application web Astro',
+		'de': 'Projektvorlage für eine Astro-Webanwendung',
+		'es': 'Plantilla de proyecto para una aplicación web Astro',
 	},
 	version: GITHUB_SHA || VERSION_TAG || 'dev',
 	author: 'Matiboux',
