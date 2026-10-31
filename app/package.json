@@ -42,6 +42,10 @@
     "typescript": "^5.9.3",
     "vitest": "^4.1.12"
   },
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=12"
+  },
   "imports": {
     "#global.css": "./src/styles/global.css",
     "#tailwind.css": "./src/styles/tailwind.css"
