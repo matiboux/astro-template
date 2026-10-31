@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "lint": "biome lint",
     "check": "astro check --tsconfig tsconfig.prod.json",
     "build-only": "astro build",
     "build": "pnpm run check && pnpm run build-only",
@@ -37,6 +38,7 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.6.4",
     "@playwright/test": "^1.64.1",
     "@types/node": "^24.19.2",
     "typescript": "^5.9.3",
