@@ -27,20 +27,20 @@
   },
   "homepage": "https://github.com/matiboux/astro-template#readme",
   "dependencies": {
-    "@astrojs/check": "^0.9.10",
+    "@astrojs/check": "^0.9.12",
     "@iconify-json/mdi": "^1.2.3",
     "@iconify-json/twemoji": "^1.2.5",
     "@iconify/tailwind4": "^1.2.3",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.3",
-    "sass": "^1.103.1",
+    "astro": "^7.4.4",
+    "sass": "^1.107.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1",
-    "@types/node": "^24.13.3",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^24.19.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "imports": {
     "#global.css": "./src/styles/global.css",
