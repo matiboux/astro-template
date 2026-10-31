@@ -1,11 +1,8 @@
 ---
-import { getRelativeLocaleUrl } from 'astro:i18n'
-
 import Layout from '~/layouts/Layout.astro'
 
-import { i18nFactory, defaultLocale } from '~/i18n'
-const locale = Astro.currentLocale ?? defaultLocale
-const _ = i18nFactory(locale as any)
+import { i18nFactory, getRelativeLocaleUrl } from '~/i18n'
+const _ = i18nFactory(Astro.currentLocale)
 ---
 
 <Layout>
@@ -21,7 +18,7 @@ const _ = i18nFactory(locale as any)
 	</p>
 
 	<p>
-		<a href={getRelativeLocaleUrl(locale, '/')}>
+		<a href={getRelativeLocaleUrl(Astro.currentLocale, '/')}>
 			<span class="icon icon-[mdi--arrow-left] icon-align icon-fw"></span>
 			{_({
 				en: 'Go back to homepage',
