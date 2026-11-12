@@ -3,6 +3,7 @@
   "dockerComposeFile": ["docker-compose.yml"],
   "service": "devcontainer",
   "workspaceFolder": "/workdir",
+  "postCreateCommand": "git config --global --add safe.directory /workdir",
   "shutdownAction": "stopCompose",
   "forwardPorts": [4321],
   "portsAttributes": {
