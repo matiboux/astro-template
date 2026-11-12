@@ -31,7 +31,7 @@ export function getCodes(path: string): string[]
 export const prefixDefaultLocale: boolean = i18nConfig.routing.prefixDefaultLocale
 
 /** Local path of a page for a locale, with trailing slash (e.g. `/fr/about/`). */
-export function localePage(locale: string, page = ''): string
+export function getLocaleUrl(locale: string, page = ''): string
 {
 	const segments = [page.replace(/^\/+|\/+$/g, '')]
 	if (locale !== defaultLocale || prefixDefaultLocale)
@@ -45,7 +45,7 @@ export function localePage(locale: string, page = ''): string
 const keys = i18nConfig.localeKeys as Record<string, Record<string, string>>
 
 /** Expected translation of a top-level key, falling back to the default locale. */
-export function translation(locale: string, key: string): string
+export function translate(locale: string, key: string): string
 {
 	return keys[locale]?.[key] ?? keys[defaultLocale]?.[key] ?? key
 }
