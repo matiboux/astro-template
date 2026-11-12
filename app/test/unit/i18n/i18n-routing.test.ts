@@ -8,21 +8,33 @@ import {
 
 import { getLocaleUrlList } from '~/i18n'
 
-// Test cases for the Astro i18n routing helpers used by the app,
-// to catch behaviour changes when updating Astro.
-// (URLs are expected with a trailing slash, as returned by Astro's default config.)
+import {
+	defaultLocale,
+	localePaths,
+	otherLocale,
+	otherLocalePaths,
+	getCodes,
+	getLocaleUrl,
+} from '~test/helpers/i18n'
+
+const pages = (page: string) => localePaths.map(locale => getLocaleUrl(locale, page))
 
 describe('getRelativeLocaleUrl', () =>
 {
-	test.each([
-		[['fr'], '/fr/'],
-		[['fr', ''], '/fr/'],
-		[['fr', 'getting-started'], '/fr/getting-started/'],
-		[['de', 'getting-started', { prependWith: 'blog' }], '/blog/de/getting-started/'],
-		[['de', 'getting-started', { prependWith: 'blog', normalizeLocale: false }], '/blog/de/getting-started/'],
-	] as const)('%j', (args, expected) =>
+	test.each(localePaths)('%s', (locale) =>
 	{
-		expect((getRelativeLocaleUrl as any)(...args)).toBe(expected)
+		expect(getRelativeLocaleUrl(locale)).toBe(getLocaleUrl(locale))
+		expect(getRelativeLocaleUrl(locale, '')).toBe(getLocaleUrl(locale))
+		expect(getRelativeLocaleUrl(locale, 'getting-started')).toBe(getLocaleUrl(locale, 'getting-started'))
+	})
+
+	test('supports prependWith', () =>
+	{
+		const locale = otherLocale ?? defaultLocale
+		expect(getRelativeLocaleUrl(locale, 'getting-started', { prependWith: 'blog' }))
+			.toBe(`/blog${getLocaleUrl(locale, 'getting-started')}`)
+		expect(getRelativeLocaleUrl(locale, 'getting-started', { prependWith: 'blog', normalizeLocale: false }))
+			.toBe(`/blog${getLocaleUrl(locale, 'getting-started')}`)
 	})
 })
 
@@ -30,41 +42,32 @@ describe('getRelativeLocaleUrlList', () =>
 {
 	test('lists the URL of every locale', () =>
 	{
-		expect(getRelativeLocaleUrlList('about')).toEqual([
-			'/about/',
-			'/fr/about/',
-			'/de/about/',
-			'/es/about/',
-		])
+		expect(getRelativeLocaleUrlList('about')).toEqual(pages('about'))
 	})
 
 	test('supports prependWith', () =>
 	{
-		expect(getRelativeLocaleUrlList('about', { prependWith: 'blog' })).toEqual([
-			'/blog/about/',
-			'/blog/fr/about/',
-			'/blog/de/about/',
-			'/blog/es/about/',
-		])
+		expect(getRelativeLocaleUrlList('about', { prependWith: 'blog' }))
+			.toEqual(pages('about').map(url => `/blog${url}`))
 	})
 })
 
 describe('getPathByLocale', () =>
 {
-	test.each([
-		['fr', 'fr'],
-		['fr_FR', 'fr'],
-	])('%s -> %s', (locale, expected) =>
+	describe.each(localePaths)('%s', (path) =>
 	{
-		expect(getPathByLocale(locale)).toBe(expected)
+		test.each(getCodes(path))('%s -> path', (code) =>
+		{
+			expect(getPathByLocale(code)).toBe(path)
+		})
 	})
 })
 
 describe('getLocaleByPath', () =>
 {
-	test('returns the first locale code of a path', () =>
+	test.each(localePaths)('returns the first locale code of path "%s"', (path) =>
 	{
-		expect(getLocaleByPath('fr')).toBe('fr')
+		expect(getLocaleByPath(path)).toBe(getCodes(path)[0])
 	})
 })
 
@@ -73,23 +76,21 @@ describe('getLocaleUrlList', () =>
 	test('lists locales for a path without locale', () =>
 	{
 		const list = getLocaleUrlList('/about')
-		expect(list.map(({ locale }) => locale)).toEqual(['en', 'fr', 'de', 'es'])
+		expect(list.map(({ locale }) => locale)).toEqual(localePaths)
 	})
 
-	test('ignores the current locale prefix', () =>
+	test.each(localePaths)('ignores the current locale prefix ("%s")', (locale) =>
 	{
-		const list = getLocaleUrlList('/fr/about')
-		expect(list.map(({ url }) => new URL(url, 'http://x').pathname)).toEqual([
-			'/about/',
-			'/fr/about/',
-			'/de/about/',
-			'/es/about/',
-		])
+		const list = getLocaleUrlList(getLocaleUrl(locale, 'about'))
+		expect(list.map(({ url }) => new URL(url, 'http://x').pathname)).toEqual(pages('about'))
 	})
 
-	test('can exclude a locale', () =>
+	test.runIf(otherLocale !== undefined)('can exclude a locale', () =>
 	{
-		const list = getLocaleUrlList('/about', 'fr')
-		expect(list.map(({ locale }) => locale)).toEqual(['en', 'de', 'es'])
+		const list = getLocaleUrlList('/about', otherLocale)
+		expect(list.map(({ locale }) => locale)).toEqual(
+			localePaths.filter(locale => locale !== otherLocale),
+		)
+		expect(otherLocalePaths).toContain(otherLocale)
 	})
 })

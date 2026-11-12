@@ -3,13 +3,19 @@ import { describe, expect, test } from 'vitest'
 import { i18n } from '~/config'
 import { diffLocaleKeys } from '~/i18n/validateLocaleKeys'
 
-const { en, ...otherLocales } = i18n.localeKeys
+const { [i18n.defaultLocale]: defaultKeys, ...otherLocales } =
+	i18n.localeKeys as Record<string, any>
 
 describe('locale keys', () =>
 {
+	test('the default locale has keys', () =>
+	{
+		expect(defaultKeys).toBeDefined()
+	})
+
 	test.each(Object.entries(otherLocales))('"%s" matches the default locale keys', (_locale, keys) =>
 	{
-		expect(diffLocaleKeys(en, keys)).toBeUndefined()
+		expect(diffLocaleKeys(defaultKeys, keys)).toBeUndefined()
 	})
 })
 
