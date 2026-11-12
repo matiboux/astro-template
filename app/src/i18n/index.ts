@@ -4,6 +4,7 @@ import { getLocaleByUrl } from './getLocaleByUrl'
 import { getRelativeLocaleUrl } from './getRelativeLocaleUrl'
 import { getLocaleUrlList } from './getLocaleUrlList'
 import { getUrlWithoutLocale } from './getUrlWithoutLocale'
+import { getStaticLocalePaths } from './getStaticLocalePaths'
 import type { Locales, I18nKeys } from './types.d.ts'
 
 export {
@@ -15,6 +16,7 @@ export {
 	getLocaleUrlList,
 	getRelativeLocaleUrl,
 	getUrlWithoutLocale,
+	getStaticLocalePaths,
 }
 
 export type {
