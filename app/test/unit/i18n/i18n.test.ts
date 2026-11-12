@@ -6,7 +6,6 @@ import { i18nFactory } from '~/i18n/i18nFactory'
 import { defaultLocale, otherLocale, translate } from '~test/helpers/i18n'
 
 const hasOther = otherLocale !== undefined
-// A locale code that is not configured at all
 const unknownLocale = '__unknown__'
 
 describe('i18n', () =>

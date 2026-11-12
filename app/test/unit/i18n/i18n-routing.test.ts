@@ -17,11 +17,6 @@ import {
 	getLocaleUrl,
 } from '~test/helpers/i18n'
 
-// Test cases for the Astro i18n routing helpers used by the app,
-// to catch behaviour changes when updating Astro.
-// (URLs are expected with a trailing slash, as returned by Astro's default config.)
-// Expectations are derived from the i18n config, so they hold when it changes.
-
 const pages = (page: string) => localePaths.map(locale => getLocaleUrl(locale, page))
 
 describe('getRelativeLocaleUrl', () =>
