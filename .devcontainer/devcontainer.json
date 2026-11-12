@@ -12,8 +12,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "astro-build.astro-vscode",
-        "mhutchie.git-graph"
+        "astro-build.astro-vscode"
       ]
     }
   }
