@@ -186,20 +186,38 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      # Dependency steps
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Get Playwright version
+        id: playwright
+        working-directory: app
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: app
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps chromium
+        working-directory: app
+
       # Execution steps
 
-      - name: Pull images for e2e tests
-        run: |
-          # docker compose pull --ignore-buildable
-          echo '::group::Pull details'
-          docker compose \
-            -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
-            --env-file .env \
-            pull --ignore-buildable
-          echo '::endgroup::'
-
-      - name: Build images for e2e tests
+      - name: Build application
         env:
+          APP_ENV: test
           # Deployment
           GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
@@ -210,85 +228,24 @@ jobs:
           ASTRO_ASSETS_PREFIX: ${{ vars.ASTRO_ASSETS_PREFIX }}
           # Application (app env vars)
           # (Add env vars for your application here.)
-        run: |
-          # docker compose build
-          echo '::group::Build details'
-          export DOCKER_UID="$(id -u)"
-          docker compose \
-            -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
-            --env-file .env \
-            build
-          echo '::endgroup::'
+        run: pnpm run build-only
+        working-directory: app
 
-      - name: Start e2e tests
-        run: |
-          # docker compose up
-          echo '::group::Run details'
-          export DOCKER_UID="$(id -u)"
-          docker compose \
-            -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
-            --env-file .env \
-            up -d
-          echo '::endgroup::'
-
-      - name: List e2e tests services
-        run: |
-          # Set DOCKER_SERVICES environment variable
-          DOCKER_SERVICES="$(
-            docker compose \
-              -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
-              --env-file .env \
-              config --services
-          )"
-          echo "Set DOCKER_SERVICES to '${DOCKER_SERVICES}'"
-          echo 'DOCKER_SERVICES<<GITHUB_ENV_EOF' >> $GITHUB_ENV
-          echo "${DOCKER_SERVICES}" >> $GITHUB_ENV
-          echo 'GITHUB_ENV_EOF' >> $GITHUB_ENV
-
-      - name: Wait for services to finish
+      - name: Run e2e tests
         env:
-          DOCKER_SERVICES: ${{ env.DOCKER_SERVICES }}
-        run: |
-          # docker compose wait
-          docker compose \
-            -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
-            --env-file .env \
-            wait $DOCKER_SERVICES \
-            || exit 0
+          CI: 'true'
+          APP_ENV: test
+        run: pnpm run test:playwright
+        working-directory: app
 
-      - name: Print services logs
-        env:
-          DOCKER_SERVICES: ${{ env.DOCKER_SERVICES }}
-        run: |
-          # docker compose logs
-          for SERVICE in $DOCKER_SERVICES; do
-            echo "::group::Docker logs for service '${SERVICE}'"
-            docker compose \
-              -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
-              --env-file .env \
-              logs --no-log-prefix $SERVICE
-            echo '::endgroup::'
-          done
-
-          # Check services exit codes
-          echo '::group::Check services exit codes'
-          docker compose \
-            -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
-            --env-file .env \
-            ps -a
-          NON_ZERO_EXIT_CODES=$(
-            docker compose \
-              -f ./docker-compose.yml -f ./docker-compose.test-e2e.yml \
-              --env-file .env \
-              ps -a --format '{{.ExitCode}}' \
-            | grep -v '^0$' \
-            || true
-          )
-          if [ -n "${NON_ZERO_EXIT_CODES}" ]; then
-            # Non-zero exit code found
-            exit 1
-          fi
-          echo '::endgroup::'
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-test-results
+          path: app/test-results
+          if-no-files-found: ignore
+          retention-days: 7
 
   # Lint Node job
   lint-node:
