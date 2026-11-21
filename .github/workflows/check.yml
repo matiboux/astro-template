@@ -250,7 +250,7 @@ jobs:
   # Lint Node job
   lint-node:
     name: Lint Node
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
 
     # Only run if:
@@ -269,12 +269,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Install pnpm
-        run: npm install -g pnpm@12
+      # Dependency steps
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-        working-directory: app
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
 
       # Execution steps
 
@@ -311,7 +309,7 @@ jobs:
   # Audit job
   audit:
     name: Audit
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
 
     # Only run if:
@@ -330,8 +328,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Install pnpm
-        run: npm install -g pnpm@12
+      # Dependency steps
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+        with:
+          install: false
 
       # Execution steps
 
