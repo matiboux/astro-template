@@ -1,15 +1,18 @@
 {
   "name": "astro-template",
-  "dockerComposeFile": ["docker-compose.yml"],
-  "service": "devcontainer",
-  "workspaceFolder": "/workdir",
-  "postCreateCommand": "git config --global --add safe.directory /workdir",
-  "shutdownAction": "stopCompose",
+  "image": "ghcr.io/matiboux/devbox-node-docker:24-pnpm",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:4": {
       "moby": false
     }
   },
+  "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=/workdir,consistency=cached",
+  "runArgs": ["--workdir", "/workdir"],
+  "workspaceFolder": "/workdir",
+  "overrideCommand": true,
+  "postCreateCommand": "git config --global --add safe.directory /workdir",
+  "postStartCommand": "if test -f runtime/memory-sync.json; then umask 077; nohup scripts/hermes_memory_sync.py --watch >> runtime/memory-sync.log 2>&1 </dev/null & fi",
+  "shutdownAction": "stopContainer",
   "forwardPorts": [4321],
   "portsAttributes": {
     "4321": { "label": "app" }
